@@ -75,13 +75,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\Gizmos.cpp" />
     <ClCompile Include="src\gl_core_4_4.c" />
+    <ClCompile Include="src\IntroToOpenGL.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Application.h" />
     <ClInclude Include="src\Gizmos.h" />
     <ClInclude Include="src\gl_core_4_4.h" />
+    <ClInclude Include="src\IntroToOpenGL.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
