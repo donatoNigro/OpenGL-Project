@@ -1,17 +1,16 @@
 #include "gl_core_4_4.h"
 #include <GLFW\glfw3.h>
 #include "Gizmos.h"
-#include "IntroToOpenGL.h"
+#include "CamerasAndProjections.h"
 
 
 int main()
 {
 
-	IntroToOpenGL app;
+	CamerasAndProjections app;
 	if (app.startup() == false)
 	{
 		return -1;
-
 	}
 
 	while (app.update() == true)
@@ -20,8 +19,6 @@ int main()
 	}
 
 	app.shutdown();
-
-
 	
 	return 0;
 }

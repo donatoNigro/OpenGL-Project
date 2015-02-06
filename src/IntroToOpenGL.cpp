@@ -97,13 +97,12 @@ bool IntroToOpenGL::update()
 
 
 
-	glfwSwapBuffers(m_window);
-	glfwPollEvents();
 
 	return true;
 }
 
 void IntroToOpenGL::draw()
 {
-
+	glfwSwapBuffers(m_window);
+	glfwPollEvents();
 }
