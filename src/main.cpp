@@ -1,13 +1,13 @@
 #include "gl_core_4_4.h"
 #include <GLFW\glfw3.h>
 #include "Gizmos.h"
-#include "CamerasAndProjections.h"
+#include "RenderingGeometry.h"
 
 
 int main()
 {
 
-	CamerasAndProjections app;
+	RenderingGeometry app;
 	if (app.startup() == false)
 	{
 		return -1;

@@ -4,11 +4,14 @@
 void Camera::setPerspective(float a_fFov, float a_fAspectRatio, float a_fNear, float a_fFar)
 {
 	m_projectionTransform = glm::perspective(a_fFov, a_fAspectRatio, a_fNear, a_fFar);
+ //	updateProjectionViewTransform();
 }
 
 void Camera::setLookAt(vec3 a_from, vec3 a_to, vec3 a_up)
 {
 	m_viewTransform = glm::lookAt(a_from, a_to, a_up);
+	//m_worldTransform = glm::inverse(m_viewTransform);
+	//updateProjectionViewTransform();
 }
 
 void Camera::setPosition(vec3 a_position)
@@ -16,6 +19,7 @@ void Camera::setPosition(vec3 a_position)
 	m_worldTransform[3][0] = a_position[0];
 	m_worldTransform[3][1] = a_position[1];
 	m_worldTransform[3][2] = a_position[2];
+//	m_viewTransform = glm::inverse(m_worldTransform);
 
 }
 
@@ -42,6 +46,6 @@ mat4 Camera::getProjectionView()
 void Camera::updateProjectionViewTransform()
 {
 	m_viewTransform = glm::inverse(m_worldTransform);
-	m_projectionViewTransform = m_viewTransform * m_projectionTransform;
+	m_projectionViewTransform = m_projectionTransform * m_viewTransform;
 }
 

@@ -17,7 +17,8 @@ bool CamerasAndProjections::startup()
 	myCamera.setSpeed(6.0f);
 	myCamera.setSensitivity(2.0f);
 	myCamera.setPosition(vec3(20, 20, 20));
-	myCamera.setLookAt(vec3(-1, -1, -1), vec3(-1, -1, -1), vec3(-1, -1, -1));
+	myCamera.setLookAt(vec3(10, 10, 10), vec3(0), vec3(0, 1, 0));
+	//myCamera.setLookAt(vec3(-1, -1, -1), vec3(-1, -1, -1), vec3(-1, -1, -1));
 	myCamera.setPerspective(glm::radians(60.0f), 1280.0f / 720.0f, 0.1f, 1000.0f);
 	
 	
@@ -52,7 +53,7 @@ bool CamerasAndProjections::update()
 	vec4 green(0, 1, 0, 1);
 
 	vec4 blue(0, 0, 1, 1);
-	myCamera.update(dt, m_window);
+	myCamera.update(dt, glfwGetCurrentContext());
 
 	Gizmos::addTransform(mat4(1));
 	for (int i = 0; i <= 20; ++i)
@@ -71,6 +72,6 @@ bool CamerasAndProjections::update()
 
 void CamerasAndProjections::draw()
 {
-	glfwSwapBuffers(m_window);
+	glfwSwapBuffers(glfwGetCurrentContext());
 	glfwPollEvents();
 }
