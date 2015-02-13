@@ -11,17 +11,7 @@
 #include "FlyCamera.h"
 
 #include "tiny_obj_loader.h"
-
-struct OpenGLData
-{
-
-	unsigned int m_VAO;
-	unsigned int m_VBO;
-	unsigned int m_IBO;
-	unsigned int m_index_count;
-
-};
-
+#include "Vertex.h"
 class Lighting : public Application
 {
 

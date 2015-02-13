@@ -2,13 +2,13 @@
 #include <GLFW\glfw3.h>
 
 #include "Gizmos.h"
-#include "Texturing.h"
+#include "AdvTex.h"
 
 
 int main()
 {
 
-	Texturing app;
+	AdvTex app;
 	if (app.startup() == false)
 	{
 		return -1;

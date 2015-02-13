@@ -1,7 +1,6 @@
 #include "Lighting.h"
 #include "FlyCamera.h"
 
-#include "Vertex.h"
 #include "Utility.h"
 #include "stb_image.h"
 
@@ -129,11 +128,11 @@ void Lighting::draw()
 	int eye_pos_uniform = glGetUniformLocation(m_program_id, "eye_pos");
 
 	int specular_power_uniform = glGetUniformLocation(m_program_id, "specular_power");
-
+	glUniform3fv(material_uniform, 1, (float*)&material_color);
 	glUniform3fv(ambient_uniform, 1, (float*)&ambient_light);
 	glUniform3fv(light_dir_uniform, 1, (float*)&light_dir);
 	glUniform3fv(light_color_uniform, 1, (float*)&light_color);
-	glUniform3fv(material_uniform, 1, (float*)&material_color);
+	
 
 	vec3 camera_pos = myCamera.getWorldTransform()[3].xyz;
 	glUniform3fv(eye_pos_uniform, 1, (float*)&camera_pos);
