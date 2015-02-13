@@ -9,6 +9,13 @@ struct Vertex
 
 };
 
+struct VertexTexCoord
+{
+	vec4 position;
+	vec2 tex_coord;
+
+};
+
 
 
 #endif

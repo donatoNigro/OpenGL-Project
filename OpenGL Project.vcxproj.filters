@@ -25,6 +25,18 @@
     <Filter Include="Source Files\Rendering Geometry">
       <UniqueIdentifier>{3962545d-77fd-47c1-aae7-6b59c45ff2c7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Texturing">
+      <UniqueIdentifier>{91845b12-e36f-454d-8f48-e1cef43ec0bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Texturing">
+      <UniqueIdentifier>{1cf6923c-a155-49d6-83ff-af1e9bb615a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Lighting">
+      <UniqueIdentifier>{30aa1125-ea6b-4ea5-ba4c-b78f8c2fb522}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Lighting">
+      <UniqueIdentifier>{c06264d4-32a6-4c8e-9e37-c1ab9b6116ee}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\gl_core_4_4.c">
@@ -55,6 +67,15 @@
       <Filter>Source Files\Rendering Geometry</Filter>
     </ClCompile>
     <ClCompile Include="src\Utility.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Texturing.cpp">
+      <Filter>Source Files\Texturing</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Lighting.cpp">
+      <Filter>Source Files\Lighting</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tiny_obj_loader.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -92,5 +113,31 @@
     <ClInclude Include="src\Utility.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\stb_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Texturing.h">
+      <Filter>Header Files\Texturing</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Lighting.h">
+      <Filter>Lighting</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tiny_obj_loader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="data\shaders\texture_fragment.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\shaders\textured_vertex.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\shaders\lighting_vertex.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\shaders\lighting_fragment.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

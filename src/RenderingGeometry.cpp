@@ -17,6 +17,7 @@ bool RenderingGeometry::startup()
 	Gizmos::create();
 	myCamera = new FlyCamera;	
 	myCamera->setSpeed(6.0f);
+	myCamera->setPosition(vec3(20.0f, 20.0f, 20.0f));
 	myCamera->setSensitivity(2.0f);
 	myCamera->setLookAt(vec3(10, 10, 10), vec3(0), vec3(0, 1, 0));
 	myCamera->setPerspective(glm::radians(60.0f), 1280.0f / 720.0f, 0.1f, 1000.0f);
@@ -29,6 +30,7 @@ bool RenderingGeometry::startup()
 
 void RenderingGeometry::shutdown()
 {
+	delete myCamera;
 	Gizmos::destroy();
 	Application::shutdown();
 }
@@ -136,7 +138,7 @@ void RenderingGeometry::generateGrid(unsigned int rows, unsigned int cols)
 	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)sizeof (vec4));
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_index_count, index_array, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_index_count * sizeof(unsigned int) , index_array, GL_STATIC_DRAW);
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);

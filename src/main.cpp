@@ -1,13 +1,14 @@
 #include "gl_core_4_4.h"
 #include <GLFW\glfw3.h>
+
 #include "Gizmos.h"
-#include "RenderingGeometry.h"
+#include "Texturing.h"
 
 
 int main()
 {
 
-	RenderingGeometry app;
+	Texturing app;
 	if (app.startup() == false)
 	{
 		return -1;
