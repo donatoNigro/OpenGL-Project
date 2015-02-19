@@ -3,6 +3,39 @@
 #include "stb_image.h"
 #include "Utility.h"
 
+
+void OnMouseButton(GLFWwindow* window, int button, int pressed, int mod_keys)
+{
+	TwEventMouseButtonGLFW(button, pressed);
+
+}
+
+void OnMousePosition(GLFWwindow* window, double x, double y)
+{
+	TwEventMousePosGLFW((int)x, (int)y);
+}
+
+void OnChar(GLFWwindow* window, unsigned int c)
+{
+	TwEventCharGLFW(c, GLFW_PRESS);
+}
+
+void OnMouseScroll(GLFWwindow* window, double x, double y)
+{
+	TwEventMouseWheelGLFW((int)y);
+}
+
+void OnKey(GLFWwindow* window, int key, int scancode, int pressed, int mod_keys)
+{
+	TwEventKeyGLFW(key, pressed);
+}
+
+void OnWindowResize(GLFWwindow* window , int width, int height)
+{
+	TwWindowSize(width, height);
+	glViewport(0, 0, width, height);
+}
+
 bool AdvTex::startup()
 {
 	if (Application::startup() == false)
@@ -10,8 +43,20 @@ bool AdvTex::startup()
 		return false;
 
 	}
+	
+	TwInit(TW_OPENGL_CORE, nullptr);
+	TwWindowSize(1280, 720);
 
-	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+	glfwSetMouseButtonCallback(m_window, OnMouseButton);
+	glfwSetCursorPosCallback(m_window, OnMousePosition);
+	glfwSetScrollCallback(m_window, OnMouseScroll);
+	glfwSetKeyCallback(m_window, OnKey);
+	glfwSetCharCallback(m_window, OnChar);
+	glfwSetWindowSizeCallback(m_window, OnWindowResize);
+
+	m_background_color = vec4(0.3, 0.3, 0.3, 1.0);
+
+	glClearColor(m_background_color.x, m_background_color.y, m_background_color.z, m_background_color.w);
 	glEnable(GL_DEPTH_TEST);
 
 	Gizmos::create();
@@ -32,6 +77,14 @@ bool AdvTex::startup()
 	
 	myCamera.setPerspective(glm::radians(60.0f), 1280.0f / 720.0f, 0.1f, 1000.0f);
 
+	m_bar = TwNewBar("Bar");
+
+	TwAddVarRW(m_bar, "Clear Colour", TW_TYPE_COLOR4F, &m_background_color, "");
+	TwAddVarRW(m_bar, "Light direction", TW_TYPE_DIR3F, &m_light_dir, "group=Light");
+	TwAddVarRW(m_bar, "Light color", TW_TYPE_COLOR4F, &m_light_color, "group=Light");
+	TwAddVarRW(m_bar, "Spec power", TW_TYPE_FLOAT, &m_specular_power, "group=Light min=0 max=100");
+	TwAddVarRW(m_bar, "Draw Gizmos", TW_TYPE_BOOL8, &m_draw_gizmos, "");
+	TwAddVarRO(m_bar, "FPS", TW_TYPE_FLOAT, &m_fps, "");
 
 	return true;
 }
@@ -39,6 +92,8 @@ bool AdvTex::startup()
 void AdvTex::shutdown()
 {
 	Gizmos::destroy();
+	TwDeleteAllBars();
+	TwTerminate();
 	Application::shutdown();
 }
 
@@ -52,11 +107,11 @@ bool AdvTex::update()
 	float dt = (float)glfwGetTime();
 	glfwSetTime(0.0);
 
-
-
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	m_fps = 1 / dt;
+	
+	
 	Gizmos::clear();
-
+	glClearColor(m_background_color.x, m_background_color.y, m_background_color.z, m_background_color.w);
 	vec4 white(1);
 
 	vec4 black(0, 0, 0, 1);
@@ -78,15 +133,19 @@ bool AdvTex::update()
 			i == 10 ? white : black);
 	}
 
-	m_light_dir = (glm::rotate(dt, vec3(0, 1, 0)) * vec4(m_light_dir, 0) ).xyz;
-
-	Gizmos::draw(myCamera.getProjection(), myCamera.getView());
+	//m_light_dir = (glm::rotate(dt, vec3(0, 1, 0)) * vec4(m_light_dir, 0) ).xyz;
+	if (m_draw_gizmos)
+	{
+		Gizmos::draw(myCamera.getProjection(), myCamera.getView());
+	}
+	
 
 	return true;
 }
 
 void AdvTex::draw()
 {
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(m_program_id);
 
 	int proj_view_uniform = glGetUniformLocation(m_program_id, "projection_view");
@@ -103,6 +162,11 @@ void AdvTex::draw()
 	glUniform3fv(ambient_uniform, 1, (float*)&m_ambient_light);
 	glUniform3fv(light_dir_uniform, 1, (float*)&m_light_dir);
 	glUniform3fv(light_color_uniform, 1, (float*)&m_light_color);
+
+	vec3 camera_pos = myCamera.getWorldTransform()[3].xyz;
+	glUniform3fv(eye_pos_uniform, 1, (float*)&camera_pos);
+
+	glUniform1f(specular_power_uniform, m_specular_power);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_diffuse_texture);
@@ -125,9 +189,15 @@ void AdvTex::draw()
 
 	glBindVertexArray(m_quad.m_VAO);
 	glDrawElements(GL_TRIANGLES, m_quad.m_index_count, GL_UNSIGNED_INT, 0);
-	Gizmos::draw(myCamera.getProjection(), myCamera.getView());
+	if (m_draw_gizmos)
+	{
+		Gizmos::draw(myCamera.getProjection(), myCamera.getView());
+	}
+	
 
+	TwDraw();
 	glfwSwapBuffers(glfwGetCurrentContext());
+
 	glfwPollEvents();
 }
 

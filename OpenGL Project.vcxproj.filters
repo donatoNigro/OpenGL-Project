@@ -43,6 +43,12 @@
     <Filter Include="Source Files\AdvTex">
       <UniqueIdentifier>{4630c039-a80b-4b5d-9b36-c1025971abef}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Quaternions">
+      <UniqueIdentifier>{fc832a72-07a6-434c-a3bb-8340513a83c9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Quaternions">
+      <UniqueIdentifier>{621d9f1c-a2ce-4690-a1a9-d41a87571197}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\gl_core_4_4.c">
@@ -86,6 +92,9 @@
     </ClCompile>
     <ClCompile Include="src\AdvTex.cpp">
       <Filter>Source Files\AdvTex</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Quaternions.cpp">
+      <Filter>Source Files\Quaternions</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -137,6 +146,9 @@
     <ClInclude Include="src\Vertex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Quaternions.h">
+      <Filter>Header Files\Quaternions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\texture_fragment.glsl">
@@ -151,10 +163,10 @@
     <None Include="data\shaders\lighting_fragment.glsl">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="data\normal_mapped_vertex.glsl">
+    <None Include="data\shaders\normal_mapped_fragment.glsl">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="data\normal_mapped_fragment.glsl">
+    <None Include="data\shaders\normal_mapped_vertex.glsl">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

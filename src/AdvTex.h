@@ -3,6 +3,8 @@
 #include "Application.h"
 #include "FlyCamera.h"
 #include "Vertex.h"
+#include "AntTweakBar.h"
+#include "gl_core_4_4.h"
 
 class AdvTex : public Application
 {
@@ -14,10 +16,9 @@ class AdvTex : public Application
 		void draw();
 		void generateQuad(float size);
 		void loadTextures();
-
-
-
-
+		
+		TwBar* m_bar;
+		vec4 m_background_color;
 		FlyCamera myCamera;
 		OpenGLData m_quad;
 
@@ -30,6 +31,7 @@ class AdvTex : public Application
 		vec3 m_light_dir;
 		vec3 m_light_color;
 	    float m_specular_power;
+
 
 
 };

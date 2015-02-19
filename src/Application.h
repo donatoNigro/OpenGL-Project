@@ -17,6 +17,9 @@ public:
 	virtual bool update();
 	virtual void draw();
 
+	bool m_draw_gizmos;
+	float m_fps;
+
 	GLFWwindow *m_window;
 
 };

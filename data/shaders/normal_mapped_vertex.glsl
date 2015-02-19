@@ -18,11 +18,8 @@ void main()
 	frag_position = position.xyz;
 	frag_normal = normal.xyz;
 	frag_tangent = tangent.xyz;
-
 	frag_bitangent = cross(normal.xyz, tangent.xyz);
-	
 	frag_tex_coord = tex_coord;
 
 	gl_Position = projection_view * position;
-
 }

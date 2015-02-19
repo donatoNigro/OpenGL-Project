@@ -2,13 +2,13 @@
 #include <GLFW\glfw3.h>
 
 #include "Gizmos.h"
-#include "AdvTex.h"
+#include "Quaternions.h"
 
 
 int main()
 {
 
-	AdvTex app;
+	Quaternions app;
 	if (app.startup() == false)
 	{
 		return -1;
