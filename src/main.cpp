@@ -2,13 +2,13 @@
 #include <GLFW\glfw3.h>
 
 #include "Gizmos.h"
-#include "Quaternions.h"
+#include "Animation.h"
 
 
 int main()
 {
 
-	Quaternions app;
+	Animation app;
 	if (app.startup() == false)
 	{
 		return -1;

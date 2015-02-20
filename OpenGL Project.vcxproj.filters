@@ -49,6 +49,12 @@
     <Filter Include="Source Files\Quaternions">
       <UniqueIdentifier>{621d9f1c-a2ce-4690-a1a9-d41a87571197}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Animation">
+      <UniqueIdentifier>{d84e5bc7-989b-47db-be74-2c31586539b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Animation">
+      <UniqueIdentifier>{29f6fed1-7449-49a0-acfa-212543fa0f79}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\gl_core_4_4.c">
@@ -81,9 +87,6 @@
     <ClCompile Include="src\Utility.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Texturing.cpp">
-      <Filter>Source Files\Texturing</Filter>
-    </ClCompile>
     <ClCompile Include="src\Lighting.cpp">
       <Filter>Source Files\Lighting</Filter>
     </ClCompile>
@@ -95,6 +98,9 @@
     </ClCompile>
     <ClCompile Include="src\Quaternions.cpp">
       <Filter>Source Files\Quaternions</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Animation.cpp">
+      <Filter>Source Files\Animation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -131,9 +137,6 @@
     <ClInclude Include="src\stb_image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Texturing.h">
-      <Filter>Header Files\Texturing</Filter>
-    </ClInclude>
     <ClInclude Include="src\Lighting.h">
       <Filter>Lighting</Filter>
     </ClInclude>
@@ -148,6 +151,9 @@
     </ClInclude>
     <ClInclude Include="src\Quaternions.h">
       <Filter>Header Files\Quaternions</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Animation.h">
+      <Filter>Header Files\Animation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -167,6 +173,12 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="data\shaders\normal_mapped_vertex.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\shaders\skinned_vertex.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\shaders\skinned_fragment.glsl">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

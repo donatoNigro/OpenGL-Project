@@ -2,7 +2,6 @@
 #define __APPLICATION_H__
 
 #include "glm_header.h"
-
 struct GLFWwindow;
 
 class Application
@@ -19,6 +18,15 @@ public:
 
 	bool m_draw_gizmos;
 	float m_fps;
+
+
+
+	
+
+
+
+
+
 
 	GLFWwindow *m_window;
 

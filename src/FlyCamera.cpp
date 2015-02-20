@@ -31,7 +31,7 @@ void FlyCamera::update(float a_deltaTime, GLFWwindow* window)
 	{
 
 		glfwGetCursorPos(window, &x_delta, &y_delta);
-		glfwSetCursorPos(window, 1280.f / 2.f, 720.f / 2.f);
+		
 
 
 		x_delta -= (1280.f / 2.f);
@@ -52,6 +52,7 @@ void FlyCamera::update(float a_deltaTime, GLFWwindow* window)
 		m_worldTransform[0] = rot * m_worldTransform[0];
 		m_worldTransform[1] = rot * m_worldTransform[1];
 		m_worldTransform[2] = rot * m_worldTransform[2];
+		glfwSetCursorPos(window, 1280.f / 2.f, 720.f / 2.f);
 	}
 
 	updateProjectionViewTransform();
