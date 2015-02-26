@@ -245,33 +245,33 @@ void Animation::UpdateBones(FBXSkeleton* skeleton)
 
 	//loop through the nodes in the skeleton
 
-	for (unsigned int bone_index = 0; bone_index < skeleton->m_boneCount; ++bone_index)
+for (unsigned int bone_index = 0; bone_index < skeleton->m_boneCount; ++bone_index)
+{
+
+	//generate their global transforms 
+	
+	int parent_index = skeleton->m_parentIndex[bone_index];
+
+	if (parent_index == -1)
 	{
-
-		//generate their global transforms 
-		
-		int parent_index = skeleton->m_parentIndex[bone_index];
-
-		if (parent_index == -1)
-		{
-			skeleton->m_bones[bone_index] = skeleton->m_nodes[bone_index]->m_localTransform;
-		}
-		else
-		{
-			skeleton->m_bones[bone_index] = skeleton->m_nodes[parent_index]->m_localTransform * skeleton->m_bones[bone_index];	
-
-		}
-		
-
+		skeleton->m_bones[bone_index] = skeleton->m_nodes[bone_index]->m_localTransform;
+	}
+	else
+	{
+		skeleton->m_bones[bone_index] = skeleton->m_bones[parent_index] * skeleton->m_nodes[bone_index]->m_localTransform;
 
 	}
+	
 
-	for (unsigned int bone_index = 0; bone_index < skeleton->m_boneCount; ++bone_index)
-	{
 
-	//multiply the global transform by the inverse bind pose
-	skeleton->m_bones[bone_index] = skeleton->m_bindPoses[bone_index] * skeleton->m_bones[bone_index];
-		
-	}
+}
+
+for (unsigned int bone_index = 0; bone_index < skeleton->m_boneCount; ++bone_index)
+{
+
+//multiply the global transform by the inverse bind pose
+skeleton->m_bones[bone_index] = skeleton->m_bones[bone_index] * skeleton->m_bindPoses[bone_index];
+	
+}
 
 }

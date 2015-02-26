@@ -2,13 +2,13 @@
 #include <GLFW\glfw3.h>
 
 #include "Gizmos.h"
-#include "Animation.h"
+#include "Particles.h"
 
 
 int main()
 {
 
-	Animation app;
+	Particles app;
 	if (app.startup() == false)
 	{
 		return -1;
