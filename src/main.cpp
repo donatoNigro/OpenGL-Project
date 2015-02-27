@@ -2,13 +2,12 @@
 #include <GLFW\glfw3.h>
 
 #include "Gizmos.h"
-#include "Particles.h"
+#include "GPUParticles.h"
 
 
 int main()
 {
-
-	Particles app;
+	GPUParticles app;
 	if (app.startup() == false)
 	{
 		return -1;

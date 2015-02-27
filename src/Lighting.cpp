@@ -24,7 +24,7 @@ bool Lighting::startup()
 	//myCamera.setLookAt(vec3(-1, -1, -1), vec3(-1, -1, -1), vec3(-1, -1, -1));
 	myCamera.setPerspective(glm::radians(60.0f), 1280.0f / 720.0f, 0.1f, 1000.0f);
 
-	LoadShader("./shaders/lighting_vertex.glsl", "./shaders/lighting_fragment.glsl", &m_program_id);
+	LoadShader("./shaders/lighting_vertex.glsl", nullptr, "./shaders/lighting_fragment.glsl", &m_program_id);
 
 	std::vector<tinyobj::shape_t> shapes;
 	std::vector<tinyobj::material_t> materials;
@@ -41,7 +41,7 @@ bool Lighting::startup()
 	light_dir = vec3(0, -1, 0);
 	light_color = vec3(0.6f, 0, 0);
 	material_color = vec3(1);
-
+	
 	m_specular_power = 15.0f;
 
 	return true;
@@ -51,7 +51,7 @@ void Lighting::reloadShader()
 {
 	glDeleteProgram(m_program_id);
 
-	LoadShader("./shaders/lighting_vertex.glsl", "./shaders/lighting_fragment.glsl", &m_program_id);
+	LoadShader("./shaders/lighting_vertex.glsl", nullptr, "./shaders/lighting_fragment.glsl", &m_program_id);
 
 }
 

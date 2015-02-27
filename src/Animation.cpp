@@ -30,7 +30,7 @@ bool Animation::startup()
 
 	GenerateGLMeshes(m_file);
 
-	LoadShader("./shaders/skinned_vertex.glsl", "./shaders/skinned_fragment.glsl", &m_program_id);
+	LoadShader("./shaders/skinned_vertex.glsl", nullptr, "./shaders/skinned_fragment.glsl", &m_program_id);
 
 	return true;
 }

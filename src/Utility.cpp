@@ -2,60 +2,103 @@
 #include <cstdio>
 #include "gl_core_4_4.h"
 
-
-bool LoadShader(char* vertex_filename, char * fragment_filename, unsigned int* result)
+bool LoadShaderType(char* filename, GLenum shader_type, unsigned int* output)
 {
-	bool succeeded = false;
-	
-	FILE *vertex_file = fopen(vertex_filename, "r");
-	FILE *fragment_file = fopen(fragment_filename, "r");
 
-	if (vertex_file == 0 || fragment_file == 0)
+	bool succeeded = true;
+
+	FILE *shader_file = fopen(filename, "r");
+
+
+	if (shader_file == 0)
 	{
-		return succeeded;
+		succeeded = false;
 	}
 	else
 	{
-		fseek(vertex_file, 0, SEEK_END);
-		int vertex_file_length = ftell(vertex_file);
-		fseek(vertex_file, 0, SEEK_SET);
+		fseek(shader_file, 0, SEEK_END);
+		int shader_file_length = ftell(shader_file);
+		fseek(shader_file, 0, SEEK_SET);
 
-		fseek(fragment_file, 0, SEEK_END);
-		int fragment_file_length = ftell(fragment_file);
-		fseek(fragment_file, 0, SEEK_SET);
+		char *shader_source = new char[shader_file_length];
 
-		char *vs_source = new char[vertex_file_length];
-		char *fs_source = new char[fragment_file_length];
-
-		vertex_file_length = fread(vs_source, 1, vertex_file_length, vertex_file);
-		fragment_file_length = fread(fs_source, 1, fragment_file_length, fragment_file);
+		shader_file_length = fread(shader_source, 1, shader_file_length, shader_file);
 
 		int success = GL_FALSE;
 		int log_length = 0;
 
-		unsigned int vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-		unsigned int fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+		unsigned int shader_handle = glCreateShader(shader_type);
+		glShaderSource(shader_handle, 1, &shader_source, &shader_file_length);
+		glCompileShader(shader_handle);
 
-		glShaderSource(vertex_shader, 1, &vs_source, &vertex_file_length);
-		glCompileShader(vertex_shader);
+		glGetShaderiv(shader_handle, GL_COMPILE_STATUS, &success);
 
-		glShaderSource(fragment_shader, 1, &fs_source, &fragment_file_length);
-		glCompileShader(fragment_shader);
+		glGetShaderiv(shader_handle, GL_LINK_STATUS, &success);
+		if (success == GL_FALSE)
+		{
+			int log_length = 0;
+			glGetShaderiv(shader_handle, GL_INFO_LOG_LENGTH, &log_length);
 
-		glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
+			char* log = new char[log_length];
+			glGetShaderInfoLog(shader_handle, log_length, 0, log);
+			printf(filename);
+			printf("THERES A ERROR !!!!!!!!!!!!!!!!!!\n\n");
+			
+			printf("%s", log);
+			delete[] log;
+			succeeded = false;
+		}
 
+		if (succeeded)
+		{
+			*output = shader_handle;
+
+		}
+
+		delete[]shader_source;
+		fclose(shader_file);
+	}
+	return succeeded;
+	
+};
+
+
+bool LoadShader(char* vertex_filename, char* geometry_filename, char* fragment_filename, unsigned int* result)
+{
+		bool succeeded = true;
 		*result = glCreateProgram();
+		unsigned int vertex_shader;
+		unsigned int fragment_shader;
+		unsigned int geometry_shader;
 
+		LoadShaderType(vertex_filename, GL_VERTEX_SHADER, &vertex_shader);
 		glAttachShader(*result, vertex_shader);
-		glAttachShader(*result, fragment_shader);
-		glLinkProgram(*result);
+		glDeleteShader(vertex_shader);
 
+		if (geometry_filename != nullptr)
+		{
+			LoadShaderType(geometry_filename, GL_GEOMETRY_SHADER, &geometry_shader);
+			glAttachShader(*result, geometry_shader);
+			glDeleteShader(geometry_shader);
+		}
 		
+		if (fragment_filename != nullptr)
+		{
+			LoadShaderType(fragment_filename, GL_FRAGMENT_SHADER, &fragment_shader);
+			glAttachShader(*result, fragment_shader);
+			
+			glDeleteShader(fragment_shader);
+		}
+
+	
+		glLinkProgram(*result);
+		
+		GLint success;
 		glGetProgramiv(*result, GL_LINK_STATUS, &success);
 
 		if (success == GL_FALSE)
 		{
-			int log_length = 0;
+			GLint log_length = 0;
 			glGetProgramiv(*result, GL_INFO_LOG_LENGTH, &log_length);
 
 			char* log = new char[log_length];
@@ -97,17 +140,8 @@ bool LoadShader(char* vertex_filename, char * fragment_filename, unsigned int* r
 			succeeded = false;
 		}
 
-
 		
-		
-		delete []vs_source;
-		delete []fs_source;
-
-		glDeleteShader(fragment_shader);
-		glDeleteShader(vertex_shader);
-
-	}
-
+	
 	
 	return succeeded;
 
