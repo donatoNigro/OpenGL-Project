@@ -193,7 +193,7 @@ void Shadows::draw()
 
 	vec3 light_dir = glm::normalize(vec3(-1, 2.5f, -1));
 
-	mat4 light_proj = glm::ortho(-10, 10, -10, 10, -10, 100);
+	mat4 light_proj = glm::ortho<float>(-10, 10, -10, 10, -10, 100);
 
 	mat4 light_view = glm::lookAt(-light_dir, vec3(0), vec3(0, 1, 0));
 
@@ -230,6 +230,7 @@ void Shadows::draw()
 
 	int shadowmap_location = glGetUniformLocation(m_diffuse_shadowed_program, "shadow_map");
 	glUniform1i(shadowmap_location, 0);
+
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_fbo_depth);
 

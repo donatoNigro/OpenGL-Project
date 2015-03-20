@@ -22,7 +22,7 @@ public:
 	virtual bool update();
 	virtual void draw();
 
-private:
+
 	FlyCamera myCamera;
 
 };

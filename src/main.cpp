@@ -2,12 +2,12 @@
 #include <GLFW\glfw3.h>
 
 #include "Gizmos.h"
-#include "Shadows.h"
+#include "Deferred.h"
 
 
 int main()
 {
-	Shadows app;
+	Deferred app;
 	if (app.startup() == false)
 	{
 		return -1;

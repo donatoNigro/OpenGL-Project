@@ -25,12 +25,6 @@
     <Filter Include="Source Files\Rendering Geometry">
       <UniqueIdentifier>{3962545d-77fd-47c1-aae7-6b59c45ff2c7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Texturing">
-      <UniqueIdentifier>{91845b12-e36f-454d-8f48-e1cef43ec0bf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Texturing">
-      <UniqueIdentifier>{1cf6923c-a155-49d6-83ff-af1e9bb615a4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Lighting">
       <UniqueIdentifier>{30aa1125-ea6b-4ea5-ba4c-b78f8c2fb522}</UniqueIdentifier>
     </Filter>
@@ -67,12 +61,6 @@
     <Filter Include="Source Files\GPUParticles">
       <UniqueIdentifier>{4af67d85-e073-4d39-bdf0-6d67a61233e7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Scene Management">
-      <UniqueIdentifier>{a8577425-b349-44db-ac0e-dfbdb7072807}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\SceneManagement">
-      <UniqueIdentifier>{40d6ad55-83ca-4ce4-a3c7-4cdc79f38417}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Threading">
       <UniqueIdentifier>{9f80f14a-f00a-4184-b839-278f939b730b}</UniqueIdentifier>
     </Filter>
@@ -96,6 +84,12 @@
     </Filter>
     <Filter Include="Header Files\Shadows">
       <UniqueIdentifier>{9454f7ce-5443-4a6d-90eb-caa0a09a9e94}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Deferred">
+      <UniqueIdentifier>{e8481f96-3f1c-4f0e-94b3-d38657014f8d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Deferred">
+      <UniqueIdentifier>{1d19738b-5c66-44f0-9827-abdacaabe3d4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -167,6 +161,9 @@
     </ClCompile>
     <ClCompile Include="src\Shadows.cpp">
       <Filter>Source Files\Shadows</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Deferred.cpp">
+      <Filter>Source Files\Deferred</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -245,6 +242,9 @@
     <ClInclude Include="src\Shadows.h">
       <Filter>Header Files\Shadows</Filter>
     </ClInclude>
+    <ClInclude Include="src\Deferred.h">
+      <Filter>Header Files\Deferred</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\texture_fragment.glsl">
@@ -305,6 +305,21 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="data\shaders\shadowmap_fragment.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\shaders\gbuffer_vertex.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\shaders\gbuffer_fragment.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\shaders\composite_vertex.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\shaders\composite_fragment.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\shaders\directional_light_fragment.glsl">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
