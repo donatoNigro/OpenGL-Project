@@ -43,7 +43,7 @@ bool LoadShaderType(char* filename, GLenum shader_type, unsigned int* output)
 			glGetShaderInfoLog(shader_handle, log_length, 0, log);
 			printf(filename);
 			printf("THERES A ERROR !!!!!!!!!!!!!!!!!!\n\n");
-			
+
 			printf("%s", log);
 			delete[] log;
 			succeeded = false;
@@ -59,90 +59,90 @@ bool LoadShaderType(char* filename, GLenum shader_type, unsigned int* output)
 		fclose(shader_file);
 	}
 	return succeeded;
-	
+
 };
 
 
 bool LoadShader(char* vertex_filename, char* geometry_filename, char* fragment_filename, unsigned int* result)
 {
-		bool succeeded = true;
-		*result = glCreateProgram();
-		unsigned int vertex_shader;
-		unsigned int fragment_shader;
-		unsigned int geometry_shader;
+	bool succeeded = true;
+	*result = glCreateProgram();
+	unsigned int vertex_shader;
+	unsigned int fragment_shader;
+	unsigned int geometry_shader;
 
-		LoadShaderType(vertex_filename, GL_VERTEX_SHADER, &vertex_shader);
-		glAttachShader(*result, vertex_shader);
-		glDeleteShader(vertex_shader);
+	LoadShaderType(vertex_filename, GL_VERTEX_SHADER, &vertex_shader);
+	glAttachShader(*result, vertex_shader);
+	glDeleteShader(vertex_shader);
 
-		if (geometry_filename != nullptr)
-		{
-			LoadShaderType(geometry_filename, GL_GEOMETRY_SHADER, &geometry_shader);
-			glAttachShader(*result, geometry_shader);
-			glDeleteShader(geometry_shader);
-		}
-		
-		if (fragment_filename != nullptr)
-		{
-			LoadShaderType(fragment_filename, GL_FRAGMENT_SHADER, &fragment_shader);
-			glAttachShader(*result, fragment_shader);
-			
-			glDeleteShader(fragment_shader);
-		}
+	if (geometry_filename != nullptr)
+	{
+		LoadShaderType(geometry_filename, GL_GEOMETRY_SHADER, &geometry_shader);
+		glAttachShader(*result, geometry_shader);
+		glDeleteShader(geometry_shader);
+	}
 
-	
-		glLinkProgram(*result);
-		
-		GLint success;
-		glGetProgramiv(*result, GL_LINK_STATUS, &success);
+	if (fragment_filename != nullptr)
+	{
+		LoadShaderType(fragment_filename, GL_FRAGMENT_SHADER, &fragment_shader);
+		glAttachShader(*result, fragment_shader);
 
-		if (success == GL_FALSE)
-		{
-			GLint log_length = 0;
-			glGetProgramiv(*result, GL_INFO_LOG_LENGTH, &log_length);
+		glDeleteShader(fragment_shader);
+	}
 
-			char* log = new char[log_length];
-			glGetProgramInfoLog(*result, log_length, 0, log);
 
-			printf("THERES A ERROR !!!!!!!!!!!!!!!!!!\n\n");
-			printf("%s", log);
-			delete[] log;
-			succeeded = false;
-		}
+	glLinkProgram(*result);
 
-		glGetShaderiv(vertex_shader, GL_LINK_STATUS, &success);
-		if (success == GL_FALSE)
-		{
-			int log_length = 0;
-			glGetShaderiv(vertex_shader, GL_INFO_LOG_LENGTH, &log_length);
+	GLint success;
+	glGetProgramiv(*result, GL_LINK_STATUS, &success);
 
-			char* log = new char[log_length];
-			glGetShaderInfoLog(vertex_shader, log_length, 0, log);
+	if (success == GL_FALSE)
+	{
+		GLint log_length = 0;
+		glGetProgramiv(*result, GL_INFO_LOG_LENGTH, &log_length);
 
-			printf("THERES A ERROR !!!!!!!!!!!!!!!!!!\n\n");
-			printf("%s", log);
-			delete[] log;
-			succeeded = false;
-		}
+		char* log = new char[log_length];
+		glGetProgramInfoLog(*result, log_length, 0, log);
 
-		glGetProgramiv(fragment_shader, GL_LINK_STATUS, &success);
-		if (success == GL_FALSE)
-		{
-			int log_length = 0;
-			glGetShaderiv(fragment_shader, GL_INFO_LOG_LENGTH, &log_length);
+		printf("THERES A ERROR !!!!!!!!!!!!!!!!!!\n\n");
+		printf("%s", log);
+		delete[] log;
+		succeeded = false;
+	}
 
-			char* log = new char[log_length];
-			glGetShaderInfoLog(fragment_shader, log_length, 0, log);
+	glGetShaderiv(vertex_shader, GL_LINK_STATUS, &success);
+	if (success == GL_FALSE)
+	{
+		int log_length = 0;
+		glGetShaderiv(vertex_shader, GL_INFO_LOG_LENGTH, &log_length);
 
-			printf("THERES A ERROR !!!!!!!!!!!!!!!!!!\n\n");
-			printf("%s", log);
-			delete[] log;
-			succeeded = false;
-		}
+		char* log = new char[log_length];
+		glGetShaderInfoLog(vertex_shader, log_length, 0, log);
 
-		
-	
-	
+		printf("THERES A ERROR !!!!!!!!!!!!!!!!!!\n\n");
+		printf("%s", log);
+		delete[] log;
+		succeeded = false;
+	}
+
+	glGetProgramiv(fragment_shader, GL_LINK_STATUS, &success);
+	if (success == GL_FALSE)
+	{
+		int log_length = 0;
+		glGetShaderiv(fragment_shader, GL_INFO_LOG_LENGTH, &log_length);
+
+		char* log = new char[log_length];
+		glGetShaderInfoLog(fragment_shader, log_length, 0, log);
+
+		printf("THERES A ERROR !!!!!!!!!!!!!!!!!!\n\n");
+		printf("%s", log);
+		delete[] log;
+		succeeded = false;
+	}
+
+
+
+
 	return succeeded;
 
 }

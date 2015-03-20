@@ -20,7 +20,18 @@ bool GPUParticles::startup()
 	myCamera.setLookAt(vec3(10, 10, 10), vec3(0), vec3(0, 1, 0));
 	myCamera.setPerspective(glm::radians(60.0f), 1280.0f / 720.0f, 0.1f, 1000.0f);
 
-	m_emitter.Init(10000, vec3(0, 0, 0), 0, 5, 5, 0.8f, 1.0f, 1, 0.01f, vec4(1, 0.4f, 0, 1), vec4(1, 0, 0, 1));
+	m_emitter.Init(
+		10000, //max particles
+		vec3(0, 0, 0), //pos
+		0, //emit rate (not yet implemented)
+		6, // min life span
+		12, // max life span
+		0.8f, // min velocity
+		5.0f, // max velocity
+		0.7f, // start size
+		0.01f, // end size
+		vec4(10, 0, 2, 1), // start colour
+		vec4(1, 2, 2, 1)); // end colour
 	
 	m_time = 0;
 
@@ -76,8 +87,6 @@ bool GPUParticles::update()
 
 void GPUParticles::draw()
 {
-	
-
 	glfwSwapBuffers(glfwGetCurrentContext());
 	glfwPollEvents();
 }

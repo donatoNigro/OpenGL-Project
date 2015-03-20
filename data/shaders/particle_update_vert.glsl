@@ -28,7 +28,7 @@ float rand(uint seed, float range)
 	uint i = (seed ^ 12345391u) * 2654435769u;
 	i ^= ( i << 6u ) ^ (i >> 36u);
 	i *= 2654435769u;
-	i += ( i << 5u_ ^ ( i >> 12u);
+	i += ( i << 5u) ^ ( i >> 12u);
 	return float(range * i) * INVERSE_MAX_UNIT;
 }
 
@@ -49,7 +49,7 @@ void main()
 		updated_position = emitter_position;
 
 		//generate seed
-		uint seed = uint(gl_vertexID + (time * 1000));
+		uint seed = uint(gl_VertexID + (time * 1000));
 
 
 		//set its velocity

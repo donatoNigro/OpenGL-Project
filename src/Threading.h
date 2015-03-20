@@ -1,5 +1,5 @@
-#ifndef _CAM_PROJ_H_
-#define _CAM_PROJ_H_
+#ifndef _THREADING_H_
+#define _THREADING_H_
 #include "Application.h"
 #include "gl_core_4_4.h"
 #include "GLFW/glfw3.h"
@@ -10,9 +10,7 @@
 #include "glm/ext.hpp"
 #include "FlyCamera.h"
 
-#include "Utility.h"
-
-class CamerasAndProjections : public Application
+class Threading : public Application
 {
 
 public:

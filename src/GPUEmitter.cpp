@@ -149,11 +149,11 @@ void GPUPointEmitter::CreateBuffers()
 void GPUPointEmitter::CreateUpdateShader()
 {
 	unsigned int vertex_shader;
-	LoadShaderType("./shaders/particle_update_vert.glsl", GL_VERTEX_SHADER, &vertex_shader);
+	LoadShaderType("./data/shaders/particle_update_vert.glsl", GL_VERTEX_SHADER, &vertex_shader);
 	m_update_shader = glCreateProgram();
 	glAttachShader(m_update_shader, vertex_shader);
 
-	const char* outputs[4] = { "updated_position", "updated_velocity", "updated_lifetime", "updated_lifespan" };
+	const char* outputs[] = { "updated_position", "updated_velocity", "updated_lifetime", "updated_lifespan" };
 
 	glTransformFeedbackVaryings(m_update_shader, 4, outputs, GL_INTERLEAVED_ATTRIBS);
 
@@ -164,7 +164,7 @@ void GPUPointEmitter::CreateUpdateShader()
 
 void GPUPointEmitter::CreateDrawShader()
 {
-	LoadShader("./shaders/gpu_particle_vert.glsl", "./shaders/gpu_particle_geom.glsl", "./shaders/gpu_particle_frag.glsl", &m_draw_shader);
+	LoadShader("./data/shaders/gpu_particle_vert.glsl", "./data/shaders/gpu_particle_geom.glsl", "./data/shaders/gpu_particle_frag.glsl", &m_draw_shader);
 
 
 }
