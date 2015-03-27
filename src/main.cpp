@@ -2,12 +2,12 @@
 #include <GLFW\glfw3.h>
 
 #include "Gizmos.h"
-#include "Deferred.h"
+#include "Procedural.h"
 
 
 int main()
 {
-	Deferred app;
+	Procedural app;
 	if (app.startup() == false)
 	{
 		return -1;

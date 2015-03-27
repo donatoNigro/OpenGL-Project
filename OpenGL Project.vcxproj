@@ -94,6 +94,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Particles.cpp" />
     <ClCompile Include="src\PostProcess.cpp" />
+    <ClCompile Include="src\Procedural.cpp" />
     <ClCompile Include="src\Quaternions.cpp" />
     <ClCompile Include="src\RenderingGeometry.cpp" />
     <ClCompile Include="src\RenderTargets.cpp" />
@@ -120,6 +121,7 @@
     <ClInclude Include="src\Lighting.h" />
     <ClInclude Include="src\Particles.h" />
     <ClInclude Include="src\PostProcess.h" />
+    <ClInclude Include="src\Procedural.h" />
     <ClInclude Include="src\Quaternions.h" />
     <ClInclude Include="src\RenderingGeometry.h" />
     <ClInclude Include="src\RenderTargets.h" />

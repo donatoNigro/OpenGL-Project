@@ -91,6 +91,12 @@
     <Filter Include="Source Files\Deferred">
       <UniqueIdentifier>{1d19738b-5c66-44f0-9827-abdacaabe3d4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Procedural">
+      <UniqueIdentifier>{321f3087-8d79-4ea9-a946-f6327a0890e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Procedural">
+      <UniqueIdentifier>{d21bf80b-38b7-49df-bbff-b803f5ba1b8a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\gl_core_4_4.c">
@@ -164,6 +170,9 @@
     </ClCompile>
     <ClCompile Include="src\Deferred.cpp">
       <Filter>Source Files\Deferred</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Procedural.cpp">
+      <Filter>Source Files\Procedural</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -244,6 +253,9 @@
     </ClInclude>
     <ClInclude Include="src\Deferred.h">
       <Filter>Header Files\Deferred</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Procedural.h">
+      <Filter>Header Files\Procedural</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
