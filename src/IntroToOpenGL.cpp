@@ -40,7 +40,7 @@ bool IntroToOpenGL::update()
 		return false;
 	}
 
-	float dt = glfwGetTime();
+	float dt = (float)glfwGetTime();
 	glfwSetTime(0.0);
 
 	m_timer += dt;

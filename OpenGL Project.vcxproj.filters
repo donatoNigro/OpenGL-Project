@@ -25,12 +25,6 @@
     <Filter Include="Source Files\Rendering Geometry">
       <UniqueIdentifier>{3962545d-77fd-47c1-aae7-6b59c45ff2c7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Texturing">
-      <UniqueIdentifier>{91845b12-e36f-454d-8f48-e1cef43ec0bf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Texturing">
-      <UniqueIdentifier>{1cf6923c-a155-49d6-83ff-af1e9bb615a4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Lighting">
       <UniqueIdentifier>{30aa1125-ea6b-4ea5-ba4c-b78f8c2fb522}</UniqueIdentifier>
     </Filter>
@@ -54,6 +48,54 @@
     </Filter>
     <Filter Include="Source Files\Animation">
       <UniqueIdentifier>{29f6fed1-7449-49a0-acfa-212543fa0f79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Particles">
+      <UniqueIdentifier>{6f4a049d-c9a8-4880-a948-819fe5a00875}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Particles">
+      <UniqueIdentifier>{658306ef-39ca-4071-96aa-0c90ccda8ca6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GPUParticles">
+      <UniqueIdentifier>{a7ea15be-4f4a-448b-8580-5e7db4686ef1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GPUParticles">
+      <UniqueIdentifier>{4af67d85-e073-4d39-bdf0-6d67a61233e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Threading">
+      <UniqueIdentifier>{9f80f14a-f00a-4184-b839-278f939b730b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Threading">
+      <UniqueIdentifier>{594cf1c6-282e-467f-9c0b-421dc7419b7a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Render Targets">
+      <UniqueIdentifier>{8ba90411-ef2e-4c02-bd2f-390291d5f4fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Render Targets">
+      <UniqueIdentifier>{51443157-7e84-4b04-8270-2c635363b957}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\PostProcess">
+      <UniqueIdentifier>{a788adbb-9951-49fd-8777-c06dbdcc66b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\PostProcess">
+      <UniqueIdentifier>{25bf8ac7-616f-481d-9052-4074fba72ca0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Shadows">
+      <UniqueIdentifier>{cb9cb948-9450-41b2-b273-33a32d2a77d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Shadows">
+      <UniqueIdentifier>{9454f7ce-5443-4a6d-90eb-caa0a09a9e94}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Deferred">
+      <UniqueIdentifier>{e8481f96-3f1c-4f0e-94b3-d38657014f8d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Deferred">
+      <UniqueIdentifier>{1d19738b-5c66-44f0-9827-abdacaabe3d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Procedural">
+      <UniqueIdentifier>{321f3087-8d79-4ea9-a946-f6327a0890e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Procedural">
+      <UniqueIdentifier>{d21bf80b-38b7-49df-bbff-b803f5ba1b8a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -98,6 +140,36 @@
     </ClCompile>
     <ClCompile Include="src\Animation.cpp">
       <Filter>Source Files\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Particles.cpp">
+      <Filter>Source Files\Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Emitter.cpp">
+      <Filter>Source Files\Particles</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GPUParticles.cpp">
+      <Filter>Source Files\GPUParticles</Filter>
+    </ClCompile>
+    <ClCompile Include="src\GPUEmitter.cpp">
+      <Filter>Source Files\GPUParticles</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Threading.cpp">
+      <Filter>Source Files\Threading</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RenderTargets.cpp">
+      <Filter>Source Files\Render Targets</Filter>
+    </ClCompile>
+    <ClCompile Include="src\PostProcess.cpp">
+      <Filter>Source Files\PostProcess</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Shadows.cpp">
+      <Filter>Source Files\Shadows</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Deferred.cpp">
+      <Filter>Source Files\Deferred</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Procedural.cpp">
+      <Filter>Source Files\Procedural</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -149,6 +221,36 @@
     <ClInclude Include="src\Animation.h">
       <Filter>Header Files\Animation</Filter>
     </ClInclude>
+    <ClInclude Include="src\Particles.h">
+      <Filter>Header Files\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Emitter.h">
+      <Filter>Header Files\Particles</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GPUParticles.h">
+      <Filter>Header Files\GPUParticles</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GPUEmitter.h">
+      <Filter>Header Files\GPUParticles</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Threading.h">
+      <Filter>Header Files\Threading</Filter>
+    </ClInclude>
+    <ClInclude Include="src\RenderTargets.h">
+      <Filter>Header Files\Render Targets</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PostProcess.h">
+      <Filter>Header Files\PostProcess</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Shadows.h">
+      <Filter>Header Files\Shadows</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Deferred.h">
+      <Filter>Header Files\Deferred</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Procedural.h">
+      <Filter>Header Files\Procedural</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="data\shaders\texture_fragment.glsl">
@@ -173,6 +275,57 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="data\shaders\skinned_fragment.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\shaders\particle_vertex.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\shaders\particle_fragment.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\shaders\gpu_particle_vert.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\shaders\gpu_particle_geom.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\shaders\gpu_particle_frag.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\shaders\particle_update_vert.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\shaders\post_vertex.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\shaders\post_fragment.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\shaders\diffuse_shadow_vertex.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\shaders\diffuse_shadow_fragment.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\shaders\shadowmap_vertex.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\shaders\shadowmap_fragment.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\shaders\gbuffer_vertex.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\shaders\gbuffer_fragment.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\shaders\composite_vertex.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\shaders\composite_fragment.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\shaders\directional_light_fragment.glsl">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

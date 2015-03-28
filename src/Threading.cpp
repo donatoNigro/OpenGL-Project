@@ -1,7 +1,7 @@
-#include "Procedural.h"
+#include "Threading.h"
 #include "FlyCamera.h"
 
-bool Procedural::startup()
+bool Threading::startup()
 {
 	if (Application::startup() == false)
 	{
@@ -20,24 +20,24 @@ bool Procedural::startup()
 	myCamera.setLookAt(vec3(10, 10, 10), vec3(0), vec3(0, 1, 0));
 	//myCamera.setLookAt(vec3(-1, -1, -1), vec3(-1, -1, -1), vec3(-1, -1, -1));
 	myCamera.setPerspective(glm::radians(60.0f), 1280.0f / 720.0f, 0.1f, 1000.0f);
-	
-	
+
+
 	return true;
 }
 
-void Procedural::shutdown()
+void Threading::shutdown()
 {
 	Gizmos::destroy();
 	Application::shutdown();
 }
 
-bool Procedural::update()
+bool Threading::update()
 {
 	if (Application::update() == false)
 	{
 		return false;
 	}
-	
+
 	float dt = (float)glfwGetTime();
 	glfwSetTime(0.0);
 
@@ -64,13 +64,13 @@ bool Procedural::update()
 		Gizmos::addLine(vec3(-10, 0, -10 + i), vec3(10, 0, -10 + i),
 			i == 10 ? white : black);
 	}
-	
+
 	Gizmos::draw(myCamera.getProjection(), myCamera.getView());
 
 	return true;
 }
 
-void Procedural::draw()
+void Threading::draw()
 {
 	glfwSwapBuffers(glfwGetCurrentContext());
 	glfwPollEvents();

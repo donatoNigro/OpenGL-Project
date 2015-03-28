@@ -13,12 +13,8 @@ using glm::mat4;
 
 class Camera
 {
- protected:
+ 
 	
-	 mat4 m_worldTransform;
-	 mat4 m_viewTransform;
-	 mat4 m_projectionTransform;
-	 mat4 m_projectionViewTransform;
 
 
  public:
@@ -32,6 +28,10 @@ class Camera
 	 mat4 getProjection();
 	 mat4 getProjectionView();
 	 void updateProjectionViewTransform();
+	 mat4 m_worldTransform;
+	 mat4 m_viewTransform;
+	 mat4 m_projectionTransform;
+	 mat4 m_projectionViewTransform;
 
 
 };
