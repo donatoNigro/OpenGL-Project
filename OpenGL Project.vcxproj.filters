@@ -93,9 +93,6 @@
     <ClCompile Include="src\tiny_obj_loader.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\AdvTex.cpp">
-      <Filter>Source Files\AdvTex</Filter>
-    </ClCompile>
     <ClCompile Include="src\Quaternions.cpp">
       <Filter>Source Files\Quaternions</Filter>
     </ClCompile>
@@ -142,9 +139,6 @@
     </ClInclude>
     <ClInclude Include="src\tiny_obj_loader.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\AdvTex.h">
-      <Filter>Header Files\Adv Textures</Filter>
     </ClInclude>
     <ClInclude Include="src\Vertex.h">
       <Filter>Header Files</Filter>
