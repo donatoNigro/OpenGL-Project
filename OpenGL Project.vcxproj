@@ -91,6 +91,7 @@
     <ClCompile Include="src\IntroToOpenGL.cpp" />
     <ClCompile Include="src\Lighting.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\NavMesh.cpp" />
     <ClCompile Include="src\Particles.cpp" />
     <ClCompile Include="src\PostProcess.cpp" />
     <ClCompile Include="src\Procedural.cpp" />
@@ -117,6 +118,7 @@
     <ClInclude Include="src\GPUParticles.h" />
     <ClInclude Include="src\IntroToOpenGL.h" />
     <ClInclude Include="src\Lighting.h" />
+    <ClInclude Include="src\NavMesh.h" />
     <ClInclude Include="src\Particles.h" />
     <ClInclude Include="src\PostProcess.h" />
     <ClInclude Include="src\Procedural.h" />

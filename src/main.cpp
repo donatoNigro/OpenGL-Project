@@ -2,12 +2,12 @@
 #include <GLFW\glfw3.h>
 
 #include "Gizmos.h"
-#include "Procedural.h"
+#include "CamerasAndProjections.h"
 
 
 int main()
 {
-	Procedural app;
+	CamerasAndProjections app;
 	if (app.startup() == false)
 	{
 		return -1;

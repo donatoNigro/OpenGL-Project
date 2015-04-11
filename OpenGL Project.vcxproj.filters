@@ -97,21 +97,18 @@
     <Filter Include="Source Files\Procedural">
       <UniqueIdentifier>{d21bf80b-38b7-49df-bbff-b803f5ba1b8a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Utilities">
+      <UniqueIdentifier>{99aa5e60-b279-4e12-9462-56bd313e503b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\NavMesh">
+      <UniqueIdentifier>{1f80e287-8ae6-42e9-8eb0-d3f6495611cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\NavMesh">
+      <UniqueIdentifier>{721036a2-8c63-4fc7-a94a-5572ad24ef38}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\gl_core_4_4.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Gizmos.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\IntroToOpenGL.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Application.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\CamerasAndProjections.cpp">
@@ -126,14 +123,11 @@
     <ClCompile Include="src\RenderingGeometry.cpp">
       <Filter>Source Files\Rendering Geometry</Filter>
     </ClCompile>
-    <ClCompile Include="src\Utility.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Lighting.cpp">
       <Filter>Source Files\Lighting</Filter>
     </ClCompile>
-    <ClCompile Include="src\tiny_obj_loader.cc">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="src\AdvTex.cpp">
+      <Filter>Source Files\AdvTex</Filter>
     </ClCompile>
     <ClCompile Include="src\Quaternions.cpp">
       <Filter>Source Files\Quaternions</Filter>
@@ -170,6 +164,27 @@
     </ClCompile>
     <ClCompile Include="src\Procedural.cpp">
       <Filter>Source Files\Procedural</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Application.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gl_core_4_4.c">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Gizmos.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="src\IntroToOpenGL.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tiny_obj_loader.cc">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Utility.cpp">
+      <Filter>Source Files\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="src\NavMesh.cpp">
+      <Filter>Source Files\NavMesh</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -212,6 +227,9 @@
     <ClInclude Include="src\tiny_obj_loader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\AdvTex.h">
+      <Filter>Header Files\Adv Textures</Filter>
+    </ClInclude>
     <ClInclude Include="src\Vertex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -250,6 +268,9 @@
     </ClInclude>
     <ClInclude Include="src\Procedural.h">
       <Filter>Header Files\Procedural</Filter>
+    </ClInclude>
+    <ClInclude Include="src\NavMesh.h">
+      <Filter>Header Files\NavMesh</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

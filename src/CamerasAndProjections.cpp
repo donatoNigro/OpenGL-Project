@@ -1,7 +1,7 @@
-#include "Procedural.h"
+#include "CamerasAndProjections.h"
 #include "FlyCamera.h"
 
-bool Procedural::startup()
+bool CamerasAndProjections::startup()
 {
 	if (Application::startup() == false)
 	{
@@ -25,13 +25,13 @@ bool Procedural::startup()
 	return true;
 }
 
-void Procedural::shutdown()
+void CamerasAndProjections::shutdown()
 {
 	Gizmos::destroy();
 	Application::shutdown();
 }
 
-bool Procedural::update()
+bool CamerasAndProjections::update()
 {
 	if (Application::update() == false)
 	{
@@ -70,7 +70,7 @@ bool Procedural::update()
 	return true;
 }
 
-void Procedural::draw()
+void CamerasAndProjections::draw()
 {
 	glfwSwapBuffers(glfwGetCurrentContext());
 	glfwPollEvents();
