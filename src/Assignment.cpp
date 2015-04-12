@@ -1,7 +1,7 @@
-#include "Procedural.h"
+#include "Assignment.h"
 #include "FlyCamera.h"
 
-bool Procedural::startup()
+bool Assignment::startup()
 {
 	if (Application::startup() == false)
 	{
@@ -60,7 +60,7 @@ bool Procedural::startup()
 }
 
 
-void Procedural::shutdown()
+void Assignment::shutdown()
 {
 
 	Gizmos::destroy();
@@ -69,7 +69,7 @@ void Procedural::shutdown()
 
 }
 
-bool Procedural::update()
+bool Assignment::update()
 {
 	if (Application::update() == false)
 	{
@@ -113,7 +113,7 @@ bool Procedural::update()
 	return true;
 }
 
-void Procedural::draw()
+void Assignment::draw()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -165,7 +165,7 @@ void Procedural::draw()
 
 }
 
-void Procedural::Input()
+void Assignment::Input()
 {
 	GLFWwindow* window = glfwGetCurrentContext();
 
@@ -190,7 +190,7 @@ void Procedural::Input()
 	}
 }
 
-void Procedural::buildGrid(vec2 real_dims, glm::ivec2 dims)
+void Assignment::buildGrid(vec2 real_dims, glm::ivec2 dims)
 {
 	//compute how many vertices we need
 	unsigned int vertex_count = (dims.x + 1) * (dims.y + 1);
@@ -284,7 +284,7 @@ void Procedural::buildGrid(vec2 real_dims, glm::ivec2 dims)
 	delete[] index_data;
 }
 
-void Procedural::buildPerlinTexture(glm::ivec2 dims, int octaves, float persistence)
+void Assignment::buildPerlinTexture(glm::ivec2 dims, int octaves, float persistence)
 {
 	//set scale
 	float scale = (1.0f / dims.x) * 3.0f;
@@ -353,7 +353,7 @@ void Procedural::buildPerlinTexture(glm::ivec2 dims, int octaves, float persiste
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void Procedural::reloadShader()
+void Assignment::reloadShader()
 {
 	glDeleteProgram(m_program_id);
 

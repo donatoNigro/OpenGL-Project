@@ -106,6 +106,15 @@
     <Filter Include="Source Files\NavMesh">
       <UniqueIdentifier>{721036a2-8c63-4fc7-a94a-5572ad24ef38}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Utilities">
+      <UniqueIdentifier>{16b696fc-9be7-4533-ace6-e66240f700ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Assignment">
+      <UniqueIdentifier>{14e3fe72-6913-43c4-9c77-dc7d1aa77da6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Assignment">
+      <UniqueIdentifier>{5370e038-9187-4176-b46c-ac460f0e9e28}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -125,9 +134,6 @@
     </ClCompile>
     <ClCompile Include="src\Lighting.cpp">
       <Filter>Source Files\Lighting</Filter>
-    </ClCompile>
-    <ClCompile Include="src\AdvTex.cpp">
-      <Filter>Source Files\AdvTex</Filter>
     </ClCompile>
     <ClCompile Include="src\Quaternions.cpp">
       <Filter>Source Files\Quaternions</Filter>
@@ -186,20 +192,14 @@
     <ClCompile Include="src\NavMesh.cpp">
       <Filter>Source Files\NavMesh</Filter>
     </ClCompile>
+    <ClCompile Include="src\GUI.cpp">
+      <Filter>Source Files\Procedural</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Assignment.cpp">
+      <Filter>Source Files\Assignment</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\gl_core_4_4.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Gizmos.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\IntroToOpenGL.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Application.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\CamerasAndProjections.h">
       <Filter>Header Files\Camera</Filter>
     </ClInclude>
@@ -212,26 +212,8 @@
     <ClInclude Include="src\RenderingGeometry.h">
       <Filter>Header Files\Rendering Geometry</Filter>
     </ClInclude>
-    <ClInclude Include="src\glm_header.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Utility.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\stb_image.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Lighting.h">
       <Filter>Lighting</Filter>
-    </ClInclude>
-    <ClInclude Include="src\tiny_obj_loader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\AdvTex.h">
-      <Filter>Header Files\Adv Textures</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Vertex.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Quaternions.h">
       <Filter>Header Files\Quaternions</Filter>
@@ -271,6 +253,39 @@
     </ClInclude>
     <ClInclude Include="src\NavMesh.h">
       <Filter>Header Files\NavMesh</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Application.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Gizmos.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\gl_core_4_4.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\glm_header.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IntroToOpenGL.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\stb_image.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tiny_obj_loader.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utility.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Vertex.h">
+      <Filter>Header Files\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GUI.h">
+      <Filter>Header Files\Procedural</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Assignment.h">
+      <Filter>Header Files\Assignment</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -347,6 +362,12 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="data\shaders\directional_light_fragment.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\shaders\perlin_vertex.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\shaders\perlin_fragment.glsl">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

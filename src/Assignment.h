@@ -1,5 +1,5 @@
-#ifndef _PROCEDURAL_H_
-#define _PROCEDURAL_H_
+#ifndef _ASSIGNMENT_H_
+#define _ASSIGNMENT_H_
 #include "Application.h"
 #include "gl_core_4_4.h"
 #include "GLFW/glfw3.h"
@@ -15,7 +15,7 @@
 
 #include "GUI.h"
 
-class Procedural : public Application
+class Assignment : public Application
 {
 
 public:
@@ -25,7 +25,7 @@ public:
 
 	virtual bool update();
 	virtual void draw();
-	
+
 	void Input();
 
 	void buildGrid(vec2 real_dims, glm::ivec2 dims);
@@ -56,7 +56,7 @@ public:
 	float MIN;
 	float MAX;
 
-	
+
 
 };
 

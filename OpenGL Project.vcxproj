@@ -79,6 +79,7 @@
   <ItemGroup>
     <ClCompile Include="src\Animation.cpp" />
     <ClCompile Include="src\Application.cpp" />
+    <ClCompile Include="src\Assignment.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\CamerasAndProjections.cpp" />
     <ClCompile Include="src\Deferred.cpp" />
@@ -88,6 +89,7 @@
     <ClCompile Include="src\gl_core_4_4.c" />
     <ClCompile Include="src\GPUEmitter.cpp" />
     <ClCompile Include="src\GPUParticles.cpp" />
+    <ClCompile Include="src\GUI.cpp" />
     <ClCompile Include="src\IntroToOpenGL.cpp" />
     <ClCompile Include="src\Lighting.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -106,6 +108,7 @@
   <ItemGroup>
     <ClInclude Include="src\Animation.h" />
     <ClInclude Include="src\Application.h" />
+    <ClInclude Include="src\Assignment.h" />
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\CamerasAndProjections.h" />
     <ClInclude Include="src\Deferred.h" />
@@ -116,6 +119,7 @@
     <ClInclude Include="src\gl_core_4_4.h" />
     <ClInclude Include="src\GPUEmitter.h" />
     <ClInclude Include="src\GPUParticles.h" />
+    <ClInclude Include="src\GUI.h" />
     <ClInclude Include="src\IntroToOpenGL.h" />
     <ClInclude Include="src\Lighting.h" />
     <ClInclude Include="src\NavMesh.h" />
@@ -150,6 +154,8 @@
     <None Include="data\shaders\particle_fragment.glsl" />
     <None Include="data\shaders\particle_update_vert.glsl" />
     <None Include="data\shaders\particle_vertex.glsl" />
+    <None Include="data\shaders\perlin_fragment.glsl" />
+    <None Include="data\shaders\perlin_vertex.glsl" />
     <None Include="data\shaders\post_fragment.glsl" />
     <None Include="data\shaders\post_vertex.glsl" />
     <None Include="data\shaders\shadowmap_fragment.glsl" />
