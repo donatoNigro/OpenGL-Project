@@ -218,9 +218,6 @@
     <ClInclude Include="src\Quaternions.h">
       <Filter>Header Files\Quaternions</Filter>
     </ClInclude>
-    <ClInclude Include="src\Animation.h">
-      <Filter>Header Files\Animation</Filter>
-    </ClInclude>
     <ClInclude Include="src\Particles.h">
       <Filter>Header Files\Particles</Filter>
     </ClInclude>
@@ -286,6 +283,9 @@
     </ClInclude>
     <ClInclude Include="src\Assignment.h">
       <Filter>Header Files\Assignment</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Animation.h">
+      <Filter>Header Files\Animation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

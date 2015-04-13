@@ -23,14 +23,14 @@ bool Animation::startup()
 
 	m_file = new FBXFile();
 	//loads fbx file which stores filepaths to all necessary files for loading the pyro model
-	m_file->load("./models/characters/enemynormal/EnemyNormal.fbx");
+	m_file->load("./data/models/characters/Enemyelite/Enemyelite.fbx");
 
 	//loads textures needed for the model and creates openGL handles for the textures
 	m_file->initialiseOpenGLTextures();
 
 	GenerateGLMeshes(m_file);
 
-	LoadShader("./shaders/skinned_vertex.glsl", nullptr, "./shaders/skinned_fragment.glsl", &m_program_id);
+	LoadShader("./data/shaders/skinned_vertex.glsl", nullptr, "./data/shaders/skinned_fragment.glsl", &m_program_id);
 
 	return true;
 }
