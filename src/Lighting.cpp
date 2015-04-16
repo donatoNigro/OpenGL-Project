@@ -24,11 +24,11 @@ bool Lighting::startup()
 	//myCamera.setLookAt(vec3(-1, -1, -1), vec3(-1, -1, -1), vec3(-1, -1, -1));
 	myCamera.setPerspective(glm::radians(60.0f), 1280.0f / 720.0f, 0.1f, 1000.0f);
 
-	LoadShader("./shaders/lighting_vertex.glsl", nullptr, "./shaders/lighting_fragment.glsl", &m_program_id);
+	LoadShader("./data/shaders/lighting_vertex.glsl", nullptr, "./data/shaders/lighting_fragment.glsl", &m_program_id);
 
 	std::vector<tinyobj::shape_t> shapes;
 	std::vector<tinyobj::material_t> materials;
-	std::string err = tinyobj::LoadObj(shapes, materials, "./models/bunny.obj");
+	std::string err = tinyobj::LoadObj(shapes, materials, "./data/models/bunny.obj");
 
 	if (err.size() != 0)
 	{
@@ -51,7 +51,7 @@ void Lighting::reloadShader()
 {
 	glDeleteProgram(m_program_id);
 
-	LoadShader("./shaders/lighting_vertex.glsl", nullptr, "./shaders/lighting_fragment.glsl", &m_program_id);
+	LoadShader("./data/shaders/lighting_vertex.glsl", nullptr, "./data/shaders/lighting_fragment.glsl", &m_program_id);
 
 }
 
@@ -116,8 +116,8 @@ void Lighting::draw()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glUseProgram(m_program_id);
 
-	int proj_view_uniform = glGetUniformLocation(m_program_id, "projection_view");
-	glUniformMatrix4fv(proj_view_uniform, 1, GL_FALSE, (float*)&myCamera.getProjectionView());
+	int lighting_proj_view_uniform = glGetUniformLocation(m_program_id, "projection_view");
+	glUniformMatrix4fv(lighting_proj_view_uniform, 1, GL_FALSE, (float*)&myCamera.getProjectionView());
 
 
 	int ambient_uniform = glGetUniformLocation(m_program_id, "ambient_light");

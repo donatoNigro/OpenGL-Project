@@ -13,7 +13,7 @@ struct VertexTexCoord
 {
 	vec4 position;
 	vec2 tex_coord;
-
+	
 };
 
 struct VertexNormal
