@@ -15,6 +15,8 @@
 #include <vector>
 #include "GUI.h"
 
+#include "Emitter.h"
+
 class Assignment : public Application
 {
 
@@ -96,6 +98,12 @@ public:
 	unsigned int m_normal_texture;
 	unsigned int m_specular_texture;
 
+	//particles
+
+	Emitter m_emitter;
+	float m_emit_time;
+
+	unsigned int m_particle_program;
 };
 
 

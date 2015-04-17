@@ -47,10 +47,10 @@ bool Assignment::startup()
 	last_octaves = m_octaves;
 	last_persistence = m_persistence;
 
-	buildPerlinTexture(m_dims, m_octaves, m_persistence);
-
 	//perlin shader
 	LoadShader("./data/shaders/perlin_vertex.glsl", nullptr, "./data/shaders/perlin_fragment.glsl", &m_perlin_program_id);
+
+	buildPerlinTexture(m_dims, m_octaves, m_persistence);
 
 	//gui
 	TerrainWindow.Init("Terrain", 1280, 720);
@@ -59,9 +59,7 @@ bool Assignment::startup()
 
 	TerrainWindow.AddBarI("Octaves", &m_octaves, "min = 0 max = 24 step = 1");
 	TerrainWindow.AddBarF("Persisistence", &m_persistence, "min = 0.0f max = 0.99f step = 0.03");
-	TerrainWindow.AddBarF("Specular Power", &m_specular_power, "min = 0.0f");
-	TerrainWindow.AddBarF("Ambient light", &ambient_light_value, "min = 0.0f step = 0.5");
-	TerrainWindow.AddBarV3("Light Direction", &light_dir, "");
+	TerrainWindow.AddBarV3("Light Dir", &light_dir, "");
 	srand(time(0));
 
 	//load models
@@ -88,9 +86,25 @@ bool Assignment::startup()
 
 	LoadShader("./data/shaders/skinned_vertex.glsl", nullptr, "./data/shaders/skinned_fragment.glsl", &m_fbx_program2);
 
-	LoadTextures("./data/rock_diffuse.tga",
-		"./data/rock_normal.tga",
-		"./data/rock_specular.tga");
+	//particle emitter
+
+	LoadShader("./data/shaders/particle_vertex.gl sl", nullptr, "./data/shaders/particle_fragment.glsl", &m_particle_program);
+
+
+	m_emitter.Init(1000,
+		vec4(0, 0, 0, 1),
+		1000,
+		1,
+		2,
+		1.0f,
+		1.5f,
+		1,
+		0.75f,
+		vec4(0, 1, 0, 1),
+		vec4(1, 0, 4, 0));
+
+	m_emit_time = 0;
+
 
 	return true;
 }
@@ -116,6 +130,7 @@ bool Assignment::update()
 
 	float dt = (float)glfwGetTime();
 	m_timer += dt;
+	m_emit_time += dt;
 	glfwSetTime(0.0f);
 
 	myCamera.update(dt, m_window);
@@ -148,10 +163,9 @@ bool Assignment::update()
 		}
 	}
 
-	FBXUpdate(m_model1);
-	FBXUpdate(m_model2);
-	UpdateNormals(m_model1, m_meshes);
-	UpdateNormals(m_model2, m_meshes2);
+	
+	m_emitter.Update(dt);
+	m_emitter.UpdateVertexData(myCamera.m_worldTransform[3].xyz, myCamera.m_worldTransform[2].xyz);
 
 	return true;
 }
@@ -250,7 +264,6 @@ void Assignment::draw()
 
 	Gizmos::draw(myCamera.getProjectionView());
 
-
 	glUseProgram(m_perlin_program_id);
 
 	int view_proj_uniform =
@@ -260,11 +273,9 @@ void Assignment::draw()
 
 	int perlin_texture_uniform =
 		glGetUniformLocation(m_perlin_program_id, "perlin_texture");
-	glUniform1i(perlin_texture_uniform, 0);
-
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_perlin_texture);
-
+	glUniform1i(perlin_texture_uniform, 0);
 
 	int scale_uniform =
 		glGetUniformLocation(m_perlin_program_id, "scale");
@@ -301,29 +312,6 @@ void Assignment::draw()
 
 	glUniform1f(specular_power_uniform, m_specular_power);
 
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, m_diffuse_texture);
-
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, m_normal_texture);
-
-	glActiveTexture(GL_TEXTURE3);
-	glBindTexture(GL_TEXTURE_2D, m_specular_texture);
-
-	int diffuse_location =
-		glGetUniformLocation(m_perlin_program_id, "diffuse_tex");
-
-	int normal_location =
-		glGetUniformLocation(m_perlin_program_id, "normal_tex");
-
-	int specular_location =
-		glGetUniformLocation(m_perlin_program_id, "specular_tex");
-
-	glUniform1i(diffuse_location, 0);
-	glUniform1i(normal_location, 1);
-	glUniform1i(specular_location, 2);
-
-
 	glBindVertexArray(m_plane_mesh.m_VAO);
 	glDrawElements(GL_TRIANGLES, m_plane_mesh.m_index_count, GL_UNSIGNED_INT, 0);
 
@@ -331,6 +319,12 @@ void Assignment::draw()
 
 	FBXDraw(m_fbx_program1, m_model1, m_meshes, 1);
 	FBXDraw(m_fbx_program2, m_model2, m_meshes2, 2);
+
+	glUseProgram(m_particle_program);
+	int particle_proj_view_uniform = glGetUniformLocation(m_particle_program, "projection_view");
+	glUniformMatrix4fv(particle_proj_view_uniform, 1, GL_FALSE, (float*)&myCamera.m_projectionViewTransform);
+
+	m_emitter.Render();
 
 	glfwSwapBuffers(m_window);
 	glfwPollEvents();
@@ -574,6 +568,7 @@ void Assignment::buildGrid(vec2 real_dims, glm::ivec2 dims)
 	
 	//allocate vertex data
 	VertexNormal* vertex_data = new VertexNormal[vertex_count];
+	//vec4* vertex_normals = new vec4[vertex_count];
 
 	//compute how many indices we need
 	unsigned int index_count = dims.x * dims.y * 6;
@@ -596,8 +591,7 @@ void Assignment::buildGrid(vec2 real_dims, glm::ivec2 dims)
 				vec2((float)x / (float)dims.x, (float)y / (float)dims.y);
 
 			vertex_data[y * (dims.x + 1) + x].normal = vec4(0, 1, 0, 0);
-			vertex_data[y * (dims.x + 1) + x].tangent = vec4(1, 0, 0, 0);
-
+			
 			curr_x += real_dims.x / (float)dims.x;
 		}
 		curr_y += real_dims.y / (float)dims.y;
@@ -611,7 +605,7 @@ void Assignment::buildGrid(vec2 real_dims, glm::ivec2 dims)
 		{
 			//create 6 indices for each quad
 
-			//traingle 1
+			//triangle 1
 			index_data[curr_index++] = y * (dims.x + 1) + x;
 			index_data[curr_index++] = (y + 1) * (dims.x + 1) + x;
 			index_data[curr_index++] = (y + 1) * (dims.x + 1) + (x + 1);
@@ -636,14 +630,12 @@ void Assignment::buildGrid(vec2 real_dims, glm::ivec2 dims)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_plane_mesh.m_IBO);
 
 	glBufferData(GL_ARRAY_BUFFER, sizeof(VertexNormal)* vertex_count, vertex_data, GL_STATIC_DRAW);
-
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER,sizeof(unsigned int) * index_count, index_data, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * index_count, index_data, GL_STATIC_DRAW);
 
 
 	glEnableVertexAttribArray(0);	//position
 	glEnableVertexAttribArray(1);	//tex coord
 	glEnableVertexAttribArray(2);   //normal
-	glEnableVertexAttribArray(3);   //tangent
 
 	//Position
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(VertexNormal), 0);
@@ -652,14 +644,14 @@ void Assignment::buildGrid(vec2 real_dims, glm::ivec2 dims)
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(VertexNormal), (void*)sizeof(vec4));
 
 	//normal
-	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE,
-		sizeof(VertexNormal), (void*)(sizeof(vec4)* 3));
+	glVertexAttribPointer(2,
+		4, 
+		GL_FLOAT, 
+		GL_FALSE,
+		sizeof(VertexNormal),
+		(void*)(sizeof(vec4) * 3));
 
-	//tangent
-	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE,
-		sizeof(VertexNormal), (void*)(sizeof(vec4)* 3));
-
-	//unbind stuff
+	//unbind
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -667,6 +659,7 @@ void Assignment::buildGrid(vec2 real_dims, glm::ivec2 dims)
 	//free data
 	delete[] vertex_data;
 	delete[] index_data;
+	
 }
 
 void Assignment::buildPerlinTexture(glm::ivec2 dims, int octaves, float persistence)
@@ -691,7 +684,7 @@ void Assignment::buildPerlinTexture(glm::ivec2 dims, int octaves, float persiste
 			//generate the perlin noise
 			m_perlin_data[y * dims.x + x] = 0;
 
-			//loop over  anumber of octaves
+			//loop over number of octaves
 			for (int o = 0; o < octaves; o++)
 			{
 				//each octave will double the frequency of the previous one
