@@ -1,5 +1,6 @@
 #include "Assignment.h"
 #include "FlyCamera.h"
+#include "stb_image.h"
 
 bool Assignment::startup()
 {
@@ -23,43 +24,87 @@ bool Assignment::startup()
 	g_pressed = false;
 
 	grid_active = true;
+
 	buildGrid(vec2(30, 30), glm::ivec2(128, 128));
 
+	//lighting
+	ambient_light_value = 0.1f;
+
+	ambient_light = vec3(ambient_light_value);
+	light_dir = vec3(0, -1, 0);
+	light_color = vec3(1, 1, 1);
+	material_color = vec3(1);
+
+	m_specular_power = 10.0f;
+
+	//perlin noise
 	m_dims = glm::ivec2(128, 128);
 	m_octaves = 6;
-	m_persistence = 0.6f;
-	m_scale = 12.0f;
+	m_persistence = 0.8f;
+	m_scale = 1.0f;
 
 	last_dims = m_dims;
 	last_octaves = m_octaves;
 	last_persistence = m_persistence;
 
+	//perlin shader
+	LoadShader("./data/shaders/perlin_vertex.glsl", nullptr, "./data/shaders/perlin_fragment.glsl", &m_perlin_program_id);
+
 	buildPerlinTexture(m_dims, m_octaves, m_persistence);
 
-	LoadShader("./data/shaders/perlin_vertex.glsl", nullptr, "./data/shaders/perlin_fragment.glsl", &m_perlin_progam_id);
-
-
+	//gui
 	TerrainWindow.Init("Terrain", 1280, 720);
 
 	TwAddSeparator(TerrainWindow.GetBar(), "TERRAIN BAR", "");
 
 	TerrainWindow.AddBarI("Octaves", &m_octaves, "min = 0 max = 24 step = 1");
 	TerrainWindow.AddBarF("Persisistence", &m_persistence, "min = 0.0f max = 0.99f step = 0.03");
-	TerrainWindow.AddBarF("Scale", &m_scale, "");
+	TerrainWindow.AddBarV3("Light Dir", &light_dir, "");
+	srand(time(0));
 
+	//load models
 	m_model1 = new FBXFile();
-
-	//loads fbx file which stores filepaths to all necessary files for loading the model
-	m_model1->load("./data/models/characters/Enemyelite/Enemyelite.fbx");
+	//loads fbx file which stores filepaths to all necessary files for loading the pyro model
+	m_model1->load("./data/models/characters/enemynormal/EnemyNormal.fbx");
 
 	//loads textures needed for the model and creates openGL handles for the textures
 	m_model1->initialiseOpenGLTextures();
 
-	GenerateGLMeshes(m_model1);
+	GenerateGLMeshes(m_model1, m_meshes);
 
-	LoadShader("./data/shaders/skinned_vertex.glsl", nullptr, "./data/shaders/skinned_fragment.glsl", &m_fbx_program_id);
+	m_model2 = new FBXFile();
+	//loads fbx file which stores filepaths to all necessary files for loading the pyro model
+	m_model2->load("./data/models/characters/Marksman/Marksman.fbx");
 
-	srand(time(0));
+	//loads textures needed for the model and creates openGL handles for the textures
+	m_model2->initialiseOpenGLTextures();
+
+	GenerateGLMeshes(m_model2, m_meshes2);
+
+	//model shaders
+	LoadShader("./data/shaders/skinned_vertex.glsl", nullptr, "./data/shaders/skinned_fragment.glsl", &m_fbx_program1);
+
+	LoadShader("./data/shaders/skinned_vertex.glsl", nullptr, "./data/shaders/skinned_fragment.glsl", &m_fbx_program2);
+
+	//particle emitter
+
+	LoadShader("./data/shaders/particle_vertex.gl sl", nullptr, "./data/shaders/particle_fragment.glsl", &m_particle_program);
+
+
+	m_emitter.Init(1000,
+		vec4(0, 0, 0, 1),
+		1000,
+		1,
+		2,
+		1.0f,
+		1.5f,
+		1,
+		0.75f,
+		vec4(0, 1, 0, 1),
+		vec4(1, 0, 4, 0));
+
+	m_emit_time = 0;
+
 
 	return true;
 }
@@ -70,6 +115,10 @@ void Assignment::shutdown()
 	Gizmos::destroy();
 
 	Application::shutdown();
+
+	m_model1->unload();
+	delete m_model1;
+
 }
 
 bool Assignment::update()
@@ -80,15 +129,16 @@ bool Assignment::update()
 	}
 
 	float dt = (float)glfwGetTime();
-	glfwSetTime(0.0);
 	m_timer += dt;
+	m_emit_time += dt;
+	glfwSetTime(0.0f);
 
 	myCamera.update(dt, m_window);
-
+	
 	Gizmos::clear();
 
 	Input();
-
+	ambient_light = vec3(ambient_light_value);
 	if (m_dims != last_dims || last_octaves != m_octaves || last_persistence != m_persistence)
 	{
 		buildPerlinTexture(m_dims, m_octaves, m_persistence);
@@ -113,9 +163,19 @@ bool Assignment::update()
 		}
 	}
 
-	FBXSkeleton* skele = m_model1->getSkeletonByIndex(0);
+	
+	m_emitter.Update(dt);
+	m_emitter.UpdateVertexData(myCamera.m_worldTransform[3].xyz, myCamera.m_worldTransform[2].xyz);
 
-	FBXAnimation* anim = m_model1->getAnimationByIndex(0);
+	return true;
+}
+
+void Assignment::FBXUpdate(FBXFile* file)
+{
+
+	FBXSkeleton* skele = file->getSkeletonByIndex(0);
+
+	FBXAnimation* anim = file->getAnimationByIndex(0);
 
 	EvaluateSkeleton(anim, skele, m_timer);
 
@@ -136,8 +196,66 @@ bool Assignment::update()
 		}
 
 	}
+}
 
-	return true;
+void Assignment::FBXDraw(unsigned int program_id, FBXFile* file, std::vector<OpenGLData> &meshes, int tex_num)
+{
+	glUseProgram(program_id);
+
+	int view_proj_uniform = glGetUniformLocation(program_id, "projection_view");
+	glUniformMatrix4fv(view_proj_uniform, 1, GL_FALSE, (float*)&myCamera.getProjectionView());
+
+	int diffuse_uniform = glGetUniformLocation(program_id, "diffuse");
+	glUniform1i(diffuse_uniform, 0);
+
+	FBXSkeleton* skeleton = file->getSkeletonByIndex(0);
+
+	UpdateBones(skeleton);
+
+	int bones_uniform = glGetUniformLocation(program_id, "bones");
+
+	glUniformMatrix4fv(bones_uniform, skeleton->m_boneCount, GL_FALSE, (float*)skeleton->m_bones);
+
+	int ambient_uniform = glGetUniformLocation(program_id, "ambient_light");
+	int light_dir_uniform = glGetUniformLocation(program_id, "light_dir");
+	int light_color_uniform = glGetUniformLocation(program_id, "light_color");
+	int material_uniform = glGetUniformLocation(program_id, "material_color");
+
+	int eye_pos_uniform = glGetUniformLocation(program_id, "eye_pos");
+
+	int specular_power_uniform = glGetUniformLocation(program_id, "specular_power");
+	glUniform3fv(material_uniform, 1, (float*)&material_color);
+	glUniform3fv(ambient_uniform, 1, (float*)&ambient_light);
+	glUniform3fv(light_dir_uniform, 1, (float*)&light_dir);
+	glUniform3fv(light_color_uniform, 1, (float*)&light_color);
+
+
+	vec3 camera_pos = myCamera.getWorldTransform()[3].xyz;
+	glUniform3fv(eye_pos_uniform, 1, (float*)&camera_pos);
+
+	glUniform1f(specular_power_uniform, m_specular_power);
+
+	for (unsigned int i = 0; i < meshes.size(); ++i)
+	{
+		FBXMeshNode* curr_mesh = file->getMeshByIndex(i);
+
+
+		FBXMaterial* mesh_material = curr_mesh->m_material;
+
+		
+		glActiveTexture(GL_TEXTURE0);
+		
+
+		glBindTexture(GL_TEXTURE_2D, mesh_material->textures[FBXMaterial::DiffuseTexture]->handle);
+
+		mat4 world_transform = curr_mesh->m_globalTransform;
+
+		int world_uniform = glGetUniformLocation(program_id, "world");
+		glUniformMatrix4fv(world_uniform, 1, GL_FALSE, (float*)&world_transform);
+		glBindVertexArray(meshes[i].m_VAO);
+		glDrawElements(GL_TRIANGLES, meshes[i].m_index_count, GL_UNSIGNED_INT, 0);
+
+	}
 }
 
 void Assignment::draw()
@@ -146,82 +264,276 @@ void Assignment::draw()
 
 	Gizmos::draw(myCamera.getProjectionView());
 
-	//perlin noise shader program
-	glUseProgram(m_perlin_progam_id);
+	glUseProgram(m_perlin_program_id);
 
-	int perlin_view_proj_uniform =
-		glGetUniformLocation(m_perlin_progam_id, "view_proj");
-	glUniformMatrix4fv(perlin_view_proj_uniform, 1,
+	int view_proj_uniform =
+		glGetUniformLocation(m_perlin_program_id, "view_proj");
+	glUniformMatrix4fv(view_proj_uniform, 1,
 		GL_FALSE, (float*)&myCamera.getProjectionView());
 
 	int perlin_texture_uniform =
-		glGetUniformLocation(m_perlin_progam_id, "perlin_texture");
-	glUniform1i(perlin_texture_uniform, 0);
-
+		glGetUniformLocation(m_perlin_program_id, "perlin_texture");
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_perlin_texture);
+	glUniform1i(perlin_texture_uniform, 0);
 
-	int perlin_scale_uniform =
-		glGetUniformLocation(m_perlin_progam_id, "scale");
-	glUniform1f(perlin_scale_uniform, m_scale);
+	int scale_uniform =
+		glGetUniformLocation(m_perlin_program_id, "scale");
+	glUniform1f(scale_uniform, m_scale);
 
-	int perlin_persistence_uniform =
-		glGetUniformLocation(m_perlin_progam_id, "persistence");
-	glUniform1f(perlin_persistence_uniform, m_persistence);
+	int persistence_uniform =
+		glGetUniformLocation(m_perlin_program_id, "persistence");
+	glUniform1f(persistence_uniform, m_persistence);
 
-	int perlin_min_uniform =
-		glGetUniformLocation(m_perlin_progam_id, "min");
-	glUniform1f(perlin_min_uniform, MIN);
+	int min_uniform =
+		glGetUniformLocation(m_perlin_program_id, "MIN");
+	glUniform1f(min_uniform, MIN);
 
-	int perlin_max_uniform =
-		glGetUniformLocation(m_perlin_progam_id, "max");
-	glUniform1f(perlin_max_uniform, MAX);
+	int max_uniform =
+		glGetUniformLocation(m_perlin_program_id, "MAX");
+	glUniform1f(max_uniform, MAX);
+
+	int ambient_uniform = glGetUniformLocation(m_perlin_program_id, "ambient_light");
+	int light_dir_uniform = glGetUniformLocation(m_perlin_program_id, "light_dir");
+	int light_color_uniform = glGetUniformLocation(m_perlin_program_id, "light_color");
+	int material_uniform = glGetUniformLocation(m_perlin_program_id, "material_color");
+
+	int eye_pos_uniform = glGetUniformLocation(m_perlin_program_id, "eye_pos");
+
+	int specular_power_uniform = glGetUniformLocation(m_perlin_program_id, "specular_power");
+	glUniform3fv(material_uniform, 1, (float*)&material_color);
+	glUniform3fv(ambient_uniform, 1, (float*)&ambient_light);
+	glUniform3fv(light_dir_uniform, 1, (float*)&light_dir);
+	glUniform3fv(light_color_uniform, 1, (float*)&light_color);
+
+
+	vec3 camera_pos = myCamera.getWorldTransform()[3].xyz;
+	glUniform3fv(eye_pos_uniform, 1, (float*)&camera_pos);
+
+	glUniform1f(specular_power_uniform, m_specular_power);
 
 	glBindVertexArray(m_plane_mesh.m_VAO);
 	glDrawElements(GL_TRIANGLES, m_plane_mesh.m_index_count, GL_UNSIGNED_INT, 0);
 
-	//ant tweak bar draw
 	TerrainWindow.Draw();
 
-	//FBX shader program
-	glUseProgram(m_fbx_program_id);
+	FBXDraw(m_fbx_program1, m_model1, m_meshes, 1);
+	FBXDraw(m_fbx_program2, m_model2, m_meshes2, 2);
 
-	int fbx_view_proj_uniform = glGetUniformLocation(m_fbx_program_id, "projection_view");
-	glUniformMatrix4fv(fbx_view_proj_uniform, 1, GL_FALSE, (float*)&myCamera.getProjectionView());
+	glUseProgram(m_particle_program);
+	int particle_proj_view_uniform = glGetUniformLocation(m_particle_program, "projection_view");
+	glUniformMatrix4fv(particle_proj_view_uniform, 1, GL_FALSE, (float*)&myCamera.m_projectionViewTransform);
 
-	int fbx_diffuse_uniform = glGetUniformLocation(m_fbx_program_id, "diffuse");
-	glUniform1i(fbx_diffuse_uniform, 0);
-
-	FBXSkeleton* skeleton = m_model1->getSkeletonByIndex(0);
-
-	UpdateBones(skeleton);
-
-	int fbx_bones_uniform = glGetUniformLocation(m_fbx_program_id, "bones");
-
-	glUniformMatrix4fv(fbx_bones_uniform, skeleton->m_boneCount, GL_FALSE, (float*)skeleton->m_bones);
-	
-	//draw model to the screen
-	for (unsigned int i = 0; i < m_meshes.size(); ++i)
-	{
-		FBXMeshNode* curr_mesh = m_model1->getMeshByIndex(i);
-
-		FBXMaterial* mesh_material = curr_mesh->m_material;
-
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, mesh_material->textures[FBXMaterial::DiffuseTexture]->handle);
-
-		mat4 world_transform = curr_mesh->m_globalTransform;
-
-		int fbx_world_uniform = glGetUniformLocation(m_fbx_program_id, "world");
-		glUniformMatrix4fv(fbx_world_uniform, 1, GL_FALSE, (float*)&world_transform);
-		glBindVertexArray(m_meshes[i].m_VAO);
-		glDrawElements(GL_TRIANGLES, m_meshes[i].m_index_count, GL_UNSIGNED_INT, 0);
-
-	}
+	m_emitter.Render();
 
 	glfwSwapBuffers(m_window);
 	glfwPollEvents();
 
+}
+
+void Assignment::UpdateNormals(FBXFile* model, std::vector<OpenGLData> &meshes)
+{
+	unsigned int mesh_count = model->getMeshCount();
+	meshes.resize(mesh_count);
+	for (unsigned int mesh_index = 0; mesh_index < mesh_count; ++mesh_index)
+	{
+		FBXMeshNode * curr_mesh = model->getMeshByIndex(mesh_index);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(FBXVertex)* curr_mesh->m_vertices.size(), curr_mesh->m_vertices.data(), GL_STATIC_DRAW);
+		glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(FBXVertex), (void*)FBXVertex::NormalOffset);
+
+	}
+	
+}
+
+void Assignment::GenerateGLMeshes(FBXFile* fbx, std::vector<OpenGLData> &meshes)
+{
+	unsigned int mesh_count = fbx->getMeshCount();
+	meshes.resize(mesh_count);
+	for (unsigned int mesh_index = 0; mesh_index < mesh_count; ++mesh_index)
+	{
+		FBXMeshNode * curr_mesh = fbx->getMeshByIndex(mesh_index);
+		meshes[mesh_index].m_index_count = curr_mesh->m_indices.size();
+		meshes.resize(mesh_count);
+		glGenBuffers(1, &meshes[mesh_index].m_VBO);
+		glGenBuffers(1, &meshes[mesh_index].m_IBO);
+		glGenVertexArrays(1, &meshes[mesh_index].m_VAO);
+
+		glBindVertexArray(meshes[mesh_index].m_VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, meshes[mesh_index].m_VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(FBXVertex)* curr_mesh->m_vertices.size(), curr_mesh->m_vertices.data(), GL_STATIC_DRAW);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meshes[mesh_index].m_IBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)* curr_mesh->m_indices.size(), curr_mesh->m_indices.data(), GL_STATIC_DRAW);
+
+		
+
+		glEnableVertexAttribArray(0);//pos
+		glEnableVertexAttribArray(1);//tex coord
+		glEnableVertexAttribArray(2);//normal
+		glEnableVertexAttribArray(3);//bone weight
+		glEnableVertexAttribArray(4);//bone indices
+	
+
+		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(FBXVertex), (void*)FBXVertex::PositionOffset);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(FBXVertex), (void*)FBXVertex::TexCoord1Offset);
+
+		glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(FBXVertex), (void*)FBXVertex::NormalOffset);
+		
+		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(FBXVertex), (void*)FBXVertex::WeightsOffset);
+		glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(FBXVertex), (void*)FBXVertex::IndicesOffset);
+		
+		
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	}
+
+
+}
+
+void Assignment::LoadTextures(const char* a_diffuse_file, const char* a_normal_file, const char* a_specular_file)
+{
+	int width = 0;
+	int height = 0;
+	int channels;
+
+	//DIFFUSE
+	unsigned char* data = stbi_load(a_diffuse_file,
+		&width, &height,
+		&channels, STBI_default);
+
+	glGenTextures(1, &m_diffuse_texture);
+	glBindTexture(GL_TEXTURE_2D, m_diffuse_texture);
+
+	//type of channel, actual data providing it (image)
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0,
+		GL_RGB, GL_UNSIGNED_BYTE, data);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	stbi_image_free(data);
+
+
+	//NORMAL
+	data = stbi_load(a_normal_file,
+		&width, &height,
+		&channels, STBI_default);
+
+	glGenTextures(1, &m_normal_texture);
+	glBindTexture(GL_TEXTURE_2D, m_normal_texture);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0,
+		GL_RGB, GL_UNSIGNED_BYTE, data);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	stbi_image_free(data);
+
+
+	//SPECULAR
+	data = stbi_load(a_specular_file,
+		&width, &height,
+		&channels, STBI_default);
+
+	glGenTextures(1, &m_specular_texture);
+	glBindTexture(GL_TEXTURE_2D, m_specular_texture);
+
+	//,type of channel, actual data providing it (image)
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0,
+		GL_RGB, GL_UNSIGNED_BYTE, data);
+
+	//Texture Filtering Options			(GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR or GL_NEAREST_MIPMAP_NEAREST)
+	//What to use when pixels are too big 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//What to use when pixels are too small
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	stbi_image_free(data);
+
+}
+
+void Assignment::EvaluateSkeleton(FBXAnimation* anim, FBXSkeleton* skeleton, float timer)
+{
+	float fps = 24.f;
+	int current_frame = (int)(timer * fps);
+
+	//loop through tracks
+	for (unsigned int track_index = 0; track_index < anim->m_trackCount; ++track_index)
+	{
+
+
+		//wrap back to the start of the track if we've gone too far
+		int track_frame_count = anim->m_tracks[track_index].m_keyframeCount;
+		int track_frame = current_frame % track_frame_count;
+
+		//find what keyframes are currently affecting the bones
+		FBXKeyFrame curr_frame = anim->m_tracks[track_index].m_keyframes[track_frame];
+		FBXKeyFrame next_frame = anim->m_tracks[track_index].m_keyframes[(track_frame + 1) % track_frame_count];
+
+
+
+		float time_since_frame_flip = timer - (current_frame / fps);
+		float t = time_since_frame_flip * fps;
+
+
+		//interpolate between those keyframes to generate the matrix for the current pose
+
+		vec3 new_pos = glm::mix(curr_frame.m_translation, next_frame.m_translation, t);
+		vec3 new_scale = glm::mix(curr_frame.m_scale, next_frame.m_scale, t);
+		glm::quat new_rot = glm::slerp(curr_frame.m_rotation, next_frame.m_rotation, t);
+
+		mat4 local_transform = glm::translate(new_pos) * glm::toMat4(new_rot) * glm::scale(new_scale);
+		int bone_index = anim->m_tracks[track_index].m_boneIndex;
+
+
+
+		//set the FBXNode's local transform
+		if (bone_index < skeleton->m_boneCount)
+		{
+			skeleton->m_nodes[bone_index]->m_localTransform = local_transform;
+		}
+
+
+	}
+
+}
+
+void Assignment::UpdateBones(FBXSkeleton* skeleton)
+{
+	//rattle me bones!	
+
+
+	//loop through the nodes in the skeleton
+
+	for (unsigned int bone_index = 0; bone_index < skeleton->m_boneCount; ++bone_index)
+	{
+
+		//generate their global transforms 
+
+		int parent_index = skeleton->m_parentIndex[bone_index];
+
+		if (parent_index == -1)
+		{
+			skeleton->m_bones[bone_index] = skeleton->m_nodes[bone_index]->m_localTransform;
+		}
+		else
+		{
+			skeleton->m_bones[bone_index] = skeleton->m_bones[parent_index] * skeleton->m_nodes[bone_index]->m_localTransform;
+
+		}
+
+
+
+	}
+
+	for (unsigned int bone_index = 0; bone_index < skeleton->m_boneCount; ++bone_index)
+	{
+
+		//multiply the global transform by the inverse bind pose
+		skeleton->m_bones[bone_index] = skeleton->m_bones[bone_index] * skeleton->m_bindPoses[bone_index];
+
+	}
 }
 
 void Assignment::Input()
@@ -249,128 +561,14 @@ void Assignment::Input()
 	}
 }
 
-void Assignment::GenerateGLMeshes(FBXFile* fbx)
-{
-	unsigned int mesh_count = fbx->getMeshCount();
-	m_meshes.resize(mesh_count);
-	for (unsigned int mesh_index = 0; mesh_index < mesh_count; ++mesh_index)
-	{
-		FBXMeshNode * curr_mesh = fbx->getMeshByIndex(mesh_index);
-		m_meshes[mesh_index].m_index_count = curr_mesh->m_indices.size();
-		m_meshes.resize(mesh_count);
-		glGenBuffers(1, &m_meshes[mesh_index].m_VBO);
-		glGenBuffers(1, &m_meshes[mesh_index].m_IBO);
-		glGenVertexArrays(1, &m_meshes[mesh_index].m_VAO);
-
-		glBindVertexArray(m_meshes[mesh_index].m_VAO);
-		glBindBuffer(GL_ARRAY_BUFFER, m_meshes[mesh_index].m_VBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(FBXVertex)* curr_mesh->m_vertices.size(), curr_mesh->m_vertices.data(), GL_STATIC_DRAW);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_meshes[mesh_index].m_IBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int)* curr_mesh->m_indices.size(), curr_mesh->m_indices.data(), GL_STATIC_DRAW);
-
-		glEnableVertexAttribArray(0);//pos
-		glEnableVertexAttribArray(1);//texcoord
-		glEnableVertexAttribArray(2);//bone indices
-		glEnableVertexAttribArray(3);//bone weight
-
-		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(FBXVertex), (void*)FBXVertex::PositionOffset);
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(FBXVertex), (void*)FBXVertex::TexCoord1Offset);
-		glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(FBXVertex), (void*)FBXVertex::IndicesOffset);
-		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(FBXVertex), (void*)FBXVertex::WeightsOffset);
-
-
-		glBindVertexArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	}
-
-
-}
-
-void Assignment::EvaluateSkeleton(FBXAnimation* anim, FBXSkeleton* skeleton, float timer)
-{
-	float fps = 24.f;
-	int current_frame = (int)(timer * fps);
-
-	//loop through tracks
-	for (unsigned int track_index = 0; track_index < anim->m_trackCount; ++track_index)
-	{
-
-		//wrap back to the start of the track if we've gone too far
-		int track_frame_count = anim->m_tracks[track_index].m_keyframeCount;
-		int track_frame = current_frame % track_frame_count;
-
-		//find what keyframes are currently affecting the bones
-		FBXKeyFrame curr_frame = anim->m_tracks[track_index].m_keyframes[track_frame];
-		FBXKeyFrame next_frame = anim->m_tracks[track_index].m_keyframes[(track_frame + 1) % track_frame_count];
-
-
-
-		float time_since_frame_flip = timer - (current_frame / fps);
-		float t = time_since_frame_flip * fps;
-
-
-		//interpolate between those keyframes to generate the matrix for the current pose
-
-		vec3 new_pos = glm::mix(curr_frame.m_translation, next_frame.m_translation, t);
-		vec3 new_scale = glm::mix(curr_frame.m_scale, next_frame.m_scale, t);
-		glm::quat new_rot = glm::slerp(curr_frame.m_rotation, next_frame.m_rotation, t);
-
-		mat4 local_transform = glm::translate(new_pos) * glm::toMat4(new_rot) * glm::scale(new_scale);
-		int bone_index = anim->m_tracks[track_index].m_boneIndex;
-
-
-		//set the FBXNode's local transform
-		if (bone_index < skeleton->m_boneCount)
-		{
-			skeleton->m_nodes[bone_index]->m_localTransform = local_transform;
-		}
-
-	}
-
-}
-
-void Assignment::UpdateBones(FBXSkeleton* skeleton)
-{
-	//rattle me bones!	
-
-	//loop through the nodes in the skeleton
-
-	for (unsigned int bone_index = 0; bone_index < skeleton->m_boneCount; ++bone_index)
-	{
-		//generate their global transforms 
-
-		int parent_index = skeleton->m_parentIndex[bone_index];
-
-		if (parent_index == -1)
-		{
-			skeleton->m_bones[bone_index] = skeleton->m_nodes[bone_index]->m_localTransform;
-		}
-		else
-		{
-			skeleton->m_bones[bone_index] = skeleton->m_bones[parent_index] * skeleton->m_nodes[bone_index]->m_localTransform;
-		}
-
-	}
-
-	for (unsigned int bone_index = 0; bone_index < skeleton->m_boneCount; ++bone_index)
-	{
-
-		//multiply the global transform by the inverse bind pose
-		skeleton->m_bones[bone_index] = skeleton->m_bones[bone_index] * skeleton->m_bindPoses[bone_index];
-
-	}
-
-}
-
-
 void Assignment::buildGrid(vec2 real_dims, glm::ivec2 dims)
 {
 	//compute how many vertices we need
 	unsigned int vertex_count = (dims.x + 1) * (dims.y + 1);
-
+	
 	//allocate vertex data
-	VertexTexCoord* vertex_data = new VertexTexCoord[vertex_count];
+	VertexNormal* vertex_data = new VertexNormal[vertex_count];
+	//vec4* vertex_normals = new vec4[vertex_count];
 
 	//compute how many indices we need
 	unsigned int index_count = dims.x * dims.y * 6;
@@ -392,6 +590,8 @@ void Assignment::buildGrid(vec2 real_dims, glm::ivec2 dims)
 			vertex_data[y * (dims.x + 1) + x].tex_coord =
 				vec2((float)x / (float)dims.x, (float)y / (float)dims.y);
 
+			vertex_data[y * (dims.x + 1) + x].normal = vec4(0, 1, 0, 0);
+			
 			curr_x += real_dims.x / (float)dims.x;
 		}
 		curr_y += real_dims.y / (float)dims.y;
@@ -405,7 +605,7 @@ void Assignment::buildGrid(vec2 real_dims, glm::ivec2 dims)
 		{
 			//create 6 indices for each quad
 
-			//traingle 1
+			//triangle 1
 			index_data[curr_index++] = y * (dims.x + 1) + x;
 			index_data[curr_index++] = (y + 1) * (dims.x + 1) + x;
 			index_data[curr_index++] = (y + 1) * (dims.x + 1) + (x + 1);
@@ -429,26 +629,29 @@ void Assignment::buildGrid(vec2 real_dims, glm::ivec2 dims)
 	glBindBuffer(GL_ARRAY_BUFFER, m_plane_mesh.m_VBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_plane_mesh.m_IBO);
 
-	glBufferData(GL_ARRAY_BUFFER,
-		sizeof(VertexTexCoord) * vertex_count, vertex_data, GL_STATIC_DRAW);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-		sizeof(unsigned int) * index_count, index_data, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(VertexNormal)* vertex_count, vertex_data, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * index_count, index_data, GL_STATIC_DRAW);
 
 
-
-	//tell opengl about our vertex structure
 	glEnableVertexAttribArray(0);	//position
 	glEnableVertexAttribArray(1);	//tex coord
+	glEnableVertexAttribArray(2);   //normal
 
 	//Position
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE,
-		sizeof(VertexTexCoord), 0);
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(VertexNormal), 0);
 
 	//Tex Coord
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE,
-		sizeof(VertexTexCoord), (void*)sizeof(vec4));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(VertexNormal), (void*)sizeof(vec4));
 
-	//unbind stuff
+	//normal
+	glVertexAttribPointer(2,
+		4, 
+		GL_FLOAT, 
+		GL_FALSE,
+		sizeof(VertexNormal),
+		(void*)(sizeof(vec4) * 3));
+
+	//unbind
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -456,6 +659,7 @@ void Assignment::buildGrid(vec2 real_dims, glm::ivec2 dims)
 	//free data
 	delete[] vertex_data;
 	delete[] index_data;
+	
 }
 
 void Assignment::buildPerlinTexture(glm::ivec2 dims, int octaves, float persistence)
@@ -480,7 +684,7 @@ void Assignment::buildPerlinTexture(glm::ivec2 dims, int octaves, float persiste
 			//generate the perlin noise
 			m_perlin_data[y * dims.x + x] = 0;
 
-			//loop over  anumber of octaves
+			//loop over number of octaves
 			for (int o = 0; o < octaves; o++)
 			{
 				//each octave will double the frequency of the previous one
@@ -529,7 +733,7 @@ void Assignment::buildPerlinTexture(glm::ivec2 dims, int octaves, float persiste
 
 void Assignment::reloadShader()
 {
-	glDeleteProgram(m_perlin_progam_id);
+	glDeleteProgram(m_perlin_program_id);
 
-	LoadShader("./data/shaders/perlin_vertex.glsl", nullptr, "./data/shaders/perlin_fragment.glsl", &m_perlin_progam_id);
+	LoadShader("./data/shaders/perlin_vertex.glsl", nullptr, "./data/shaders/perlin_fragment.glsl", &m_perlin_program_id);
 }
