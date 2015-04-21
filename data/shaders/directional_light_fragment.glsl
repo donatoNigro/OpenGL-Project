@@ -15,9 +15,9 @@ uniform sampler2D normal_tex;
 
 void main()
 {
-	vec3 normal_sample = texture(normal_tex, frag_tex).xyz;
+	vec3 normal_sample = texture(normal_tex, frag_texcoord).xyz;
 	normal_sample *= 2;
-	normal sample -= 1;
+	normal_sample -= 1;
 
 	vec3 position_sample = texture(position_tex, frag_texcoord).xyz;
 

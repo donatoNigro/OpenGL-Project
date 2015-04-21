@@ -25,14 +25,8 @@
     <Filter Include="Source Files\Rendering Geometry">
       <UniqueIdentifier>{3962545d-77fd-47c1-aae7-6b59c45ff2c7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Lighting">
-      <UniqueIdentifier>{30aa1125-ea6b-4ea5-ba4c-b78f8c2fb522}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Lighting">
       <UniqueIdentifier>{c06264d4-32a6-4c8e-9e37-c1ab9b6116ee}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Adv Textures">
-      <UniqueIdentifier>{4e23d7fd-2c38-4675-a939-5669c5dc3545}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\AdvTex">
       <UniqueIdentifier>{4630c039-a80b-4b5d-9b36-c1025971abef}</UniqueIdentifier>
@@ -114,6 +108,9 @@
     </Filter>
     <Filter Include="Source Files\Assignment">
       <UniqueIdentifier>{5370e038-9187-4176-b46c-ac460f0e9e28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Lighting">
+      <UniqueIdentifier>{30aa1125-ea6b-4ea5-ba4c-b78f8c2fb522}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -213,7 +210,7 @@
       <Filter>Header Files\Rendering Geometry</Filter>
     </ClInclude>
     <ClInclude Include="src\Lighting.h">
-      <Filter>Lighting</Filter>
+      <Filter>Header Files\Lighting</Filter>
     </ClInclude>
     <ClInclude Include="src\Quaternions.h">
       <Filter>Header Files\Quaternions</Filter>

@@ -90,12 +90,10 @@ public:
 
 	float m_specular_power;
 
-	void LoadTextures(const char* a_diffuse_file,
-		const char* a_normal_file,
-		const char* a_specular_file);
+	void LoadTextures(const char* a_diffuse_file, const char* a_specular_file);
 
+	//textures
 	unsigned int m_diffuse_texture;
-	unsigned int m_normal_texture;
 	unsigned int m_specular_texture;
 
 	//particles
@@ -104,6 +102,8 @@ public:
 	float m_emit_time;
 
 	unsigned int m_particle_program;
+
+
 };
 
 

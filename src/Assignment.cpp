@@ -50,6 +50,8 @@ bool Assignment::startup()
 	//perlin shader
 	LoadShader("./data/shaders/perlin_vertex.glsl", nullptr, "./data/shaders/perlin_fragment.glsl", &m_perlin_program_id);
 
+	LoadTextures("./data/rock_diffuse.tga", "./data/rock_specular.tga");
+
 	buildPerlinTexture(m_dims, m_octaves, m_persistence);
 
 	//gui
@@ -264,6 +266,9 @@ void Assignment::draw()
 
 	Gizmos::draw(myCamera.getProjectionView());
 
+	FBXDraw(m_fbx_program1, m_model1, m_meshes, 1);
+	FBXDraw(m_fbx_program2, m_model2, m_meshes2, 2);
+
 	glUseProgram(m_perlin_program_id);
 
 	int view_proj_uniform =
@@ -296,12 +301,12 @@ void Assignment::draw()
 	int ambient_uniform = glGetUniformLocation(m_perlin_program_id, "ambient_light");
 	int light_dir_uniform = glGetUniformLocation(m_perlin_program_id, "light_dir");
 	int light_color_uniform = glGetUniformLocation(m_perlin_program_id, "light_color");
-	int material_uniform = glGetUniformLocation(m_perlin_program_id, "material_color");
+	
 
 	int eye_pos_uniform = glGetUniformLocation(m_perlin_program_id, "eye_pos");
 
 	int specular_power_uniform = glGetUniformLocation(m_perlin_program_id, "specular_power");
-	glUniform3fv(material_uniform, 1, (float*)&material_color);
+	
 	glUniform3fv(ambient_uniform, 1, (float*)&ambient_light);
 	glUniform3fv(light_dir_uniform, 1, (float*)&light_dir);
 	glUniform3fv(light_color_uniform, 1, (float*)&light_color);
@@ -315,16 +320,29 @@ void Assignment::draw()
 	glBindVertexArray(m_plane_mesh.m_VAO);
 	glDrawElements(GL_TRIANGLES, m_plane_mesh.m_index_count, GL_UNSIGNED_INT, 0);
 
+	//load diffuse tex
+	int diffuse_texture_uniform =
+		glGetUniformLocation(m_perlin_program_id, "diffuse_tex");
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, m_diffuse_texture);
+	glUniform1i(diffuse_texture_uniform, 1);
+
+	//load specular tex
+	int specular_texture_uniform =
+		glGetUniformLocation(m_perlin_program_id, "specular_tex");
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, m_specular_texture);
+	glUniform1i(specular_texture_uniform, 2);
+
 	TerrainWindow.Draw();
 
-	FBXDraw(m_fbx_program1, m_model1, m_meshes, 1);
-	FBXDraw(m_fbx_program2, m_model2, m_meshes2, 2);
+	
 
 	glUseProgram(m_particle_program);
 	int particle_proj_view_uniform = glGetUniformLocation(m_particle_program, "projection_view");
 	glUniformMatrix4fv(particle_proj_view_uniform, 1, GL_FALSE, (float*)&myCamera.m_projectionViewTransform);
 
-	m_emitter.Render();
+	//m_emitter.Render();
 
 	glfwSwapBuffers(m_window);
 	glfwPollEvents();
@@ -390,7 +408,7 @@ void Assignment::GenerateGLMeshes(FBXFile* fbx, std::vector<OpenGLData> &meshes)
 
 }
 
-void Assignment::LoadTextures(const char* a_diffuse_file, const char* a_normal_file, const char* a_specular_file)
+void Assignment::LoadTextures(const char* a_diffuse_file, const char* a_specular_file)
 {
 	int width = 0;
 	int height = 0;
@@ -413,24 +431,6 @@ void Assignment::LoadTextures(const char* a_diffuse_file, const char* a_normal_f
 
 	stbi_image_free(data);
 
-
-	//NORMAL
-	data = stbi_load(a_normal_file,
-		&width, &height,
-		&channels, STBI_default);
-
-	glGenTextures(1, &m_normal_texture);
-	glBindTexture(GL_TEXTURE_2D, m_normal_texture);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0,
-		GL_RGB, GL_UNSIGNED_BYTE, data);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-	stbi_image_free(data);
-
-
 	//SPECULAR
 	data = stbi_load(a_specular_file,
 		&width, &height,
@@ -439,14 +439,12 @@ void Assignment::LoadTextures(const char* a_diffuse_file, const char* a_normal_f
 	glGenTextures(1, &m_specular_texture);
 	glBindTexture(GL_TEXTURE_2D, m_specular_texture);
 
-	//,type of channel, actual data providing it (image)
+	//type of channel, actual data providing it (image)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0,
 		GL_RGB, GL_UNSIGNED_BYTE, data);
-
-	//Texture Filtering Options			(GL_LINEAR, GL_LINEAR_MIPMAP_LINEAR or GL_NEAREST_MIPMAP_NEAREST)
-	//What to use when pixels are too big 
+	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	//What to use when pixels are too small
+
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 	stbi_image_free(data);
@@ -583,13 +581,15 @@ void Assignment::buildGrid(vec2 real_dims, glm::ivec2 dims)
 		float curr_x = -real_dims.x / 2.0f;
 		for (int x = 0; x < dims.x + 1; ++x)
 		{
-			//create points
+			//create positions
 			vertex_data[y * (dims.x + 1) + x].position =
 				vec4(curr_x, 0, curr_y, 1);
 
+			//create tex coords
 			vertex_data[y * (dims.x + 1) + x].tex_coord =
 				vec2((float)x / (float)dims.x, (float)y / (float)dims.y);
 
+			//create normals
 			vertex_data[y * (dims.x + 1) + x].normal = vec4(0, 1, 0, 0);
 			
 			curr_x += real_dims.x / (float)dims.x;
@@ -629,7 +629,7 @@ void Assignment::buildGrid(vec2 real_dims, glm::ivec2 dims)
 	glBindBuffer(GL_ARRAY_BUFFER, m_plane_mesh.m_VBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_plane_mesh.m_IBO);
 
-	glBufferData(GL_ARRAY_BUFFER, sizeof(VertexNormal)* vertex_count, vertex_data, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(VertexNormal) * vertex_count, vertex_data, GL_STATIC_DRAW);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * index_count, index_data, GL_STATIC_DRAW);
 
 
@@ -641,15 +641,15 @@ void Assignment::buildGrid(vec2 real_dims, glm::ivec2 dims)
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, sizeof(VertexNormal), 0);
 
 	//Tex Coord
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(VertexNormal), (void*)sizeof(vec4));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(VertexNormal), (void*)(sizeof(vec4) * 2));
 
 	//normal
-	glVertexAttribPointer(2,
-		4, 
-		GL_FLOAT, 
-		GL_FALSE,
-		sizeof(VertexNormal),
-		(void*)(sizeof(vec4) * 3));
+	glVertexAttribPointer(2, //index
+	4, //size
+	GL_FLOAT, //type 
+	GL_FALSE, //normalized
+	sizeof(VertexNormal), //stride (size of the array of data to send)
+	(void*)(sizeof(vec4) * 3)); //pointer (offest from this variable to the first variable of the array of data to send)
 
 	//unbind
 	glBindVertexArray(0);
@@ -713,6 +713,7 @@ void Assignment::buildPerlinTexture(glm::ivec2 dims, int octaves, float persiste
 		}
 	}
 
+	
 	//generate opengl texture handles
 	glGenTextures(1, &m_perlin_texture);
 	glBindTexture(GL_TEXTURE_2D, m_perlin_texture);
