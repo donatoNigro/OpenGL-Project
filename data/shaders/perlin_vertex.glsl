@@ -8,7 +8,7 @@ uniform mat4 view_proj;
 
 out vec2 frag_texcoord;
 out vec4 frag_position;
-out vec4 frag_normal;
+out vec3 frag_normal;
 
 
 uniform sampler2D perlin_texture;
@@ -20,19 +20,19 @@ uniform float persistence;
 
 void main()
 {
+
 	vec4 pos = position;
 	pos.y += texture(perlin_texture, texcoord).r * scale;
 
-	//vec3 v1 = vec3(1, texture(perlin_texture, texcoord),0);
-	//vec3 v2;
-	//vec3 n = cross(v1 - position, v2 - position);
-	//n = normalize(n);
+
+
+
 
 	frag_texcoord = texcoord;
 	frag_position = pos;
-	frag_normal = normal;
+	//frag_normal = n_vec;
 
-
+	frag_normal = normal.xyz;
 
 	gl_Position = view_proj * pos;
 }

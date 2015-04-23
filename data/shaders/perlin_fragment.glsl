@@ -1,7 +1,7 @@
 #version 410
 
 in vec2 frag_texcoord;
-in vec4 frag_normal;
+in vec3 frag_normal;
 in vec4 frag_position;
 
 out vec4 frag_color;
@@ -33,16 +33,26 @@ void main()
 
 	float perlin_sample = texture(perlin_texture, frag_texcoord).r;
 	
+	
+
+
 	perlin_sample *= (persistence) * (scale / 10);
 	perlin_sample -= MIN;
 	perlin_sample /= (MAX - MIN);
 
 	perlin_sample * MIN;
 
-
+	//normals
+	vec3 norm_pos = normalize(frag_position.xyz);
+	vec3 dx = dFdx(frag_position.xyz);
+	vec3 dy = dFdy(frag_position.xyz);
+	normalize(dx);
+	normalize(dy);
+	vec3 n_vec = cross(dx, dy);
+	//normals
 
 	
-	vec3 N = normalize(frag_normal.xyz);
+	vec3 N = normalize(n_vec);
 	vec3 L = normalize(light_dir);
 
 	vec3 material_color = texture(diffuse_tex, frag_texcoord).xyz;
